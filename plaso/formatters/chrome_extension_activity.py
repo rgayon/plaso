@@ -29,16 +29,17 @@ class ChromeExtensionActivityEventFormatter(
   SOURCE_LONG = u'Chrome Extension Activity'
   SOURCE_SHORT = u'WEBHIST'
 
-  # From https://chromium.googlesource.com/chromium/src.git/+/master/chrome/browser/extensions/activity_log/activity_actions.h
+  # From:
+  # https://chromium.googlesource.com/chromium/src.git/+/master/chrome/browser/extensions/activity_log/activity_actions.h
   _CHROME_ACTION_TYPES = {
-	0 : "API call",
-	1 : "API event callback",
-	2 : "API action blocked",
-	3 : "Content Script inserted",
-	4 : "DOM access",
-	5 : "DOM event",
-	6 : "WebRequest",
-	1001 : "any"
+        0 : "API call",
+        1 : "API event callback",
+        2 : "API action blocked",
+        3 : "Content Script inserted",
+        4 : "DOM access",
+        5 : "DOM event",
+        6 : "WebRequest",
+        1001 : "any"
   }
 
   def GetMessages(self, unused_formatter_mediator, event_object):
@@ -62,8 +63,10 @@ class ChromeExtensionActivityEventFormatter(
     event_values = event_object.GetValues()
 
     action_type = event_values.get(u'action_type')
-    event_values[u'action_type'] = u'%s (type %d)'%(self._CHROME_ACTION_TYPES.get(action_type,"unknown action_type"),
-						    action_type)
+    event_values[u'action_type'] = u'%s (type %d)'%
+      (self._CHROME_ACTION_TYPES.get(action_type,"unknown action_type"),
+        action_type
+    )
 
     return self._ConditionalFormatMessages(event_values)
 
