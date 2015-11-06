@@ -63,8 +63,8 @@ class ChromeExtensionActivityEventFormatter(
     event_values = event_object.GetValues()
 
     action_type = event_values.get(u'action_type')
-    event_values[u'action_type'] = u'%s (type %d)'%
-      (self._CHROME_ACTION_TYPES.get(action_type,"unknown action_type"),
+    event_values[u'action_type'] = u'%s (type %d)'%(
+        self._CHROME_ACTION_TYPES.get(action_type,"unknown action_type"),
         action_type
     )
 
