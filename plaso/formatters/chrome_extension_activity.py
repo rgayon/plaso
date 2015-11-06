@@ -3,6 +3,7 @@
 
 from plaso.formatters import interface
 from plaso.formatters import manager
+from plaso.lib import errors
 
 
 class ChromeExtensionActivityEventFormatter(
@@ -64,7 +65,7 @@ class ChromeExtensionActivityEventFormatter(
 
     action_type = event_values.get(u'action_type')
     event_values[u'action_type'] = u'%s (type %d)'%(
-        self._CHROME_ACTION_TYPES.get(action_type,"unknown action_type"),
+        self._CHROME_ACTION_TYPES.get(action_type, "unknown action_type"),
         action_type
     )
 
