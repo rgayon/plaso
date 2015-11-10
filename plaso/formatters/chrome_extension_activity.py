@@ -40,7 +40,7 @@ class ChromeExtensionActivityEventFormatter(
       4 : "DOM access",
       5 : "DOM event",
       6 : "WebRequest",
-      1001 : "any"
+      1001 : "Unspecified"
   }
 
   def GetMessages(self, unused_formatter_mediator, event_object):
