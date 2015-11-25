@@ -3,7 +3,8 @@
 
 """
 
-import re
+import json
+import os
 
 from plaso.events import text_events
 from plaso.lib import errors
@@ -11,7 +12,6 @@ from plaso.lib import eventdata
 from plaso.parsers import manager
 from plaso.parsers import interface
 
-import json
 
 class DockerJSONParser(interface.FileObjectParser):
   """ An empty docstring """
@@ -20,8 +20,17 @@ class DockerJSONParser(interface.FileObjectParser):
   DESCRIPTION = u'Parser for JSON Docker files.'
 
   def ParseFileObject(self, parser_mediator, file_object):
-    file_entry = parser_mediator.GetFileEntry()
-    file_object = file_entry.GetFileObject()
+
+    # First pass check for initial character being open brace.
+    file_object.seek(0, os.SEEK_SET)
+
+    if file_object.read(1) != b'{':
+      raise errors.UnableToParseFile((
+          u'[{0:s}] {1:s} is not a valid Preference file, '
+          u'missing opening brace.').format(
+              self.NAME, parser_mediator.GetDisplayName()))
+
+    file_object.seek(0, os.SEEK_SET)
 
     try:
       j = json.load(file_object)
@@ -41,6 +50,5 @@ class DockerEvent(text_events.TextEvent):
   """Convenience class for a mactime-based event."""
 
   DATA_TYPE = u'docker:json:generic'
-
 
 manager.ParsersManager.RegisterParser(DockerJSONParser)
