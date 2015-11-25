@@ -34,7 +34,7 @@ class DockerJSONParser(interface.SingleFileBaseParser):
         parser_mediator.ProduceEvent(event_object)
 
 
-class DockerEvent(time_events.TextEvent):
+class DockerEvent(text_events.TextEvent):
   """Convenience class for a mactime-based event."""
 
   DATA_TYPE = u'docker:json:generic'
