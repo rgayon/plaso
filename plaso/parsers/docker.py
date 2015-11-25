@@ -14,6 +14,10 @@ import json
 
 class DockerJSONParser(interface.SingleFileBaseParser):
   """ An empty docstring """
+
+  NAME = u'dockerjson'
+  DESCRIPTION = u'Parser for JSON Docker files.'
+
   # This looks so pythonic
   def __init__(self):
     super(TextJSONParser, self).__init__()
