@@ -42,16 +42,5 @@ class DockerEvent(text_events.TextEvent):
 
   DATA_TYPE = u'docker:json:generic'
 
-  def __init__(self, posix_time, offset, attr):
-    """Initializes a mactime-based event object.
-
-    Args:
-      posix_time: The POSIX time value.
-      usage: The description of the usage of the time value.
-      row_offset: The offset of the row.
-      data: A dict object containing extracted data from the body file.
-    """
-    super(text_events.TextEvent, self).__init__(self,posix_time,offset,attr)
-
 
 manager.ParsersManager.RegisterParser(DockerJSONParser)
