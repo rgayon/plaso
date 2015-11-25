@@ -13,7 +13,7 @@ from plaso.parsers import interface
 
 import json
 
-class DockerJSONParser(interface.SingleFileBaseParser):
+class DockerJSONParser(interface.FileObjectParser):
   """ An empty docstring """
 
   NAME = u'dockerjson'
