@@ -51,7 +51,7 @@ class DockerEvent(text_events.TextEvent):
       row_offset: The offset of the row.
       data: A dict object containing extracted data from the body file.
     """
-    super(TextEvent, self).__init__(self,posix_time,offset,attr)
+    super(text_events.TextEvent, self).__init__(self,posix_time,offset,attr)
 
 
 manager.ParsersManager.RegisterParser(DockerJSONParser)
