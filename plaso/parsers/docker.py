@@ -6,6 +6,7 @@
 import re
 
 from plaso.events import text_events
+from plaso.lib import errors
 from plaso.lib import eventdata
 from plaso.parsers import manager
 from plaso.parsers import interface
