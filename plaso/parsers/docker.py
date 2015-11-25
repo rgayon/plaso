@@ -22,12 +22,18 @@ class DockerJSONParser(interface.SingleFileBaseParser):
     file_entry = parser_mediator.GetFileEntry()
     file_object = file_entry.GetFileObject()
 
-    j = json.load(file_object)
+    try:
+      j = json.load(file_object)
 
-    for jj in j:
-      if jj.lower() in ["created","startedat","finishedat"]:
-        event_object = DockerEvent(12345678900,0,{jj:j[jj]})
-        parser_mediator.ProduceEvent(event_object)
+      for jj in j:
+        if jj.lower() in ["created","startedat","finishedat"]:
+          event_object = DockerEvent(12345678900,0,{jj:j[jj]})
+          parser_mediator.ProduceEvent(event_object)
+    except ValueError as exception:
+      raise errors.UnableToParseFile((
+          u'[{0:s}] Unable to parse file {1:s} as '
+          u'JSON: {2:s}').format(
+              self.NAME, parser_mediator.GetDisplayName(), exception))
 
 
 class DockerEvent(text_events.TextEvent):
