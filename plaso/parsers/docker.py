@@ -18,10 +18,6 @@ class DockerJSONParser(interface.SingleFileBaseParser):
   NAME = u'dockerjson'
   DESCRIPTION = u'Parser for JSON Docker files.'
 
-  # This looks so pythonic
-  def __init__(self):
-    super(TextJSONParser, self).__init__()
-
   def ParseFileObject(self, parser_mediator, file_object):
     file_entry = parser_mediator.GetFileEntry()
     file_object = file_entry.GetFileObject()
