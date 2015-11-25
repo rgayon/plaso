@@ -25,7 +25,7 @@ class DockerJSONParser(interface.SingleFileBaseParser):
     j = json.load(file_object)
 
     for jj in j:
-      if jj.lowercase() in ["created","startedat","finishedat"]:
+      if jj.lower() in ["created","startedat","finishedat"]:
         event_object = DockerEvent(12345678900,0,{jj:j[jj]})
         parser_mediator.ProduceEvent(event_object)
 
