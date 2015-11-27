@@ -5,25 +5,24 @@ from plaso.formatters import interface
 from plaso.formatters import manager
 
 
-class DockerEventFormatter(
+class DockerContainerEventFormatter(
     interface.ConditionalEventFormatter):
   """Formatter for a Docker event."""
 
-  DATA_TYPE = u'docker:json:generic'
+  DATA_TYPE = u'docker:json:container'
 
-#  FORMAT_STRING_PIECES = [
-#      u'CRX ID: {extension_id}',
-#      u'CRX Name: {extension_name}',
-#      u'Path: {path}']
-#
-#  FORMAT_STRING_SHORT_PIECES = [
-#      u'{extension_id}',
-#      u'{path}']
+  FORMAT_STRING_PIECES = [
+      u'Container ID: {containerid}',
+      u'Action: {action}']
 
-  SOURCE_LONG = u'Docker'
-  SOURCE_SHORT = u'LOG'
+  FORMAT_STRING_SHORT_PIECES = [
+      u'{action}',
+      u'{containerid}']
+
+  SOURCE_LONG = u'Docker Container'
+  SOURCE_SHORT = u'Docker'
 
 
 manager.FormattersManager.RegisterFormatter(
-    DockerEventFormatter)
+    DockerContainerEventFormatter)
 
