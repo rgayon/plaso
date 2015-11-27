@@ -35,7 +35,7 @@ class DockerJSONParser(interface.FileObjectParser):
 
     file_object.seek(0, os.SEEK_SET)
 
-    json_file_path = file_object.GetPathSpec().location
+    json_file_path = parser_mediator.GetFileEntry().path_spec.location
     try:
       if json_file_path.find("/containers")> 0 :
         if json_file_path.find("/config.json") >0:
@@ -64,7 +64,7 @@ class DockerJSONParser(interface.FileObjectParser):
   def _ParseContainerConfigJSON(self,file_object,parser_mediator):
     j = json.load(file_object)
     ts=None
-    path = file_object.GetPathSpec().location
+    path = parser_mediator.GetFileEntry().path_spec.location
     attr={"containerid":path.split("/")[-2]}
     if "State" in j:
       if "StartedAt" in j["State"]:
