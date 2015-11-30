@@ -5,6 +5,30 @@ from plaso.formatters import interface
 from plaso.formatters import manager
 
 
+class DockerEventFormatter(interface.ConditionalEventFormatter):
+  """Formatter for a Docker event."""
+
+  DATA_TYPE = u'docker:json'
+
+  FORMAT_STRING_SHORT_PIECES = [
+      u'{action}',
+      u'{id}']
+
+  SOURCE_SHORT = u'DOCKER'
+
+class DockerLayerEventFormatter(
+    interface.ConditionalEventFormatter):
+  """Formatter for a Docker Layer event."""
+
+  DATA_TYPE = u'docker:json:layer'
+
+  FORMAT_STRING_PIECES = [
+      u'Layer ID: {id}',
+      u'Action: {action}']
+
+  SOURCE_LONG = u'Docker Layer Event'
+  SOURCE_SHORT = u'DOCKER'
+
 class DockerContainerEventFormatter(
     interface.ConditionalEventFormatter):
   """Formatter for a Docker event."""
@@ -12,17 +36,16 @@ class DockerContainerEventFormatter(
   DATA_TYPE = u'docker:json:container'
 
   FORMAT_STRING_PIECES = [
-      u'Container ID: {containerid}',
+      u'Container ID: {id}',
       u'Action: {action}']
 
-  FORMAT_STRING_SHORT_PIECES = [
-      u'{action}',
-      u'{containerid}']
-
-  SOURCE_LONG = u'Docker Container'
-  SOURCE_SHORT = u'Docker'
+  SOURCE_LONG = u'Docker Container Event'
+  SOURCE_SHORT = u'DOCKER'
 
 
-manager.FormattersManager.RegisterFormatter(
-    DockerContainerEventFormatter)
+manager.FormattersManager.RegisterFormatters([
+    DockerEventFormatter,
+    DockerContainerEventFormatter,
+    DockerLayerEventFormatter,
+])
 
