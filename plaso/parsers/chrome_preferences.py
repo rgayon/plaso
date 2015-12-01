@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""lolA parser for the Chrome preferences file."""
+"""A parser for the Chrome preferences file."""
 
 import json
 import logging
