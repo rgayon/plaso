@@ -45,11 +45,11 @@ class DockerJSONParser(interface.FileObjectParser):
       json_file_path = parser_mediator.GetFileEntry().path_spec.parent.location
     try:
       if json_file_path.find("/containers")> 0 :
-        # TODO: parse json.log
         if json_file_path.find("/config.json") >0:
           self._ParseContainerConfigJSON(file_object, parser_mediator)
-
-      elif json_file_path.find("/graph")> 0 :
+        if json_file_path.find("-json.log") > 0 :
+          self._ParseContainerLogJSON(file_object, parser_mediator)
+      elif json_file_path.find(os.path."/graph")> 0 :
         if json_file_path.find("/json") >0:
           self._ParseLayerConfigJSON(file_object, parser_mediator)
     except ValueError as exception:
@@ -104,6 +104,14 @@ class DockerJSONParser(interface.FileObjectParser):
       ts=self._GetDateTimeFromString(j["Created"])
       attr["action"]="Container Created"
       parser_mediator.ProduceEvent(DockerJSONContainerEvent(ts,eventdata.EventTimestamp.ADDED_TIME,attr))
+
+  def _ParseContainerLogJSON(file_object, parser_mediator):
+    j = json.load(file_object)
+    ts=None
+    path = parser_mediator.GetFileEntry().path_spec.location
+    _tab=path.split("/")
+      # Not a docker container JSON file
+      return
 
 
 class DockerJSONEvent(time_events.TimestampEvent):
