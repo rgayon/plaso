@@ -5,8 +5,8 @@ from plaso.formatters import interface
 from plaso.formatters import manager
 
 
-class DockerBaseEventFormatter(interface.ConditionalEventFormatter):
-  """Class that contains common Docker event formatter functionality."""
+class DockerEventFormatter(interface.ConditionalEventFormatter):
+  """Formatter for a Docker event."""
 
   DATA_TYPE = u'docker:json'
 
@@ -15,36 +15,23 @@ class DockerBaseEventFormatter(interface.ConditionalEventFormatter):
 
   SOURCE_SHORT = u'DOCKER'
 
-
-class DockerContainerLogEventFormatter(interface.ConditionalEventFormatter):
-  """Formatter for a Docker container Log Event"""
-
-  DATA_TYPE = u'docker:json:container:log'
-
-  FORMAT_STRING_PIECES = (
-      u'Text: {log_line},',
-      u'Container ID: {container_id},',
-      u'Source: {log_source}',
-  )
-
-  SOURCE_LONG = u'Docker Container Logs'
-  SOURCE_SHORT = u'DOCKER'
-
-
 class DockerLayerEventFormatter(
     interface.ConditionalEventFormatter):
   """Formatter for a Docker Layer event."""
 
   DATA_TYPE = u'docker:json:layer'
 
-  FORMAT_STRING_PIECES = (
-      u'Command: {command},',
-      u'Layer ID: {layer_id},',
+  FORMAT_STRING_PIECES= (
+      u'Layer ID: {id}',
+      u'Command: {cmd}'
+  )
+  FORMAT_STRING_SHORT_PIECES= (
+      u'ID: {id}',
+      u'Cmd: {cmd}'
   )
 
-  SOURCE_LONG = u'Docker Layer'
+  SOURCE_LONG = u'Docker Layer Event'
   SOURCE_SHORT = u'DOCKER'
-
 
 class DockerContainerEventFormatter(
     interface.ConditionalEventFormatter):
@@ -53,18 +40,16 @@ class DockerContainerEventFormatter(
   DATA_TYPE = u'docker:json:container'
 
   FORMAT_STRING_PIECES = [
-      u'Action: {action},',
-      u'Container Name: {container_name},',
-      u'Container ID: {container_id},',
-  ]
+      u'Container ID: {id}',
+      u'Action: {action}']
 
-  SOURCE_LONG = u'Docker Container'
+  SOURCE_LONG = u'Docker Container Event'
   SOURCE_SHORT = u'DOCKER'
 
 
 manager.FormattersManager.RegisterFormatters([
-    DockerBaseEventFormatter,
+    DockerEventFormatter,
     DockerContainerEventFormatter,
-    DockerContainerLogEventFormatter,
     DockerLayerEventFormatter,
 ])
+
