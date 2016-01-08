@@ -61,7 +61,8 @@ class DockerJSONParser(interface.FileObjectParser):
       else:
         raise exception
 
-  def _GetDateTimeFromString(self, s):
+  def _GetDateTimeFromString(self, ss):
+    s=ss.replace("Z","")
     d=datetime(1,1,1) # Looks like it's Docker's default timestamp
     if len(s)  >= 26:
       # Slicing to 26 because python doesn't understand nanosec timestamps
@@ -73,13 +74,13 @@ class DockerJSONParser(interface.FileObjectParser):
     j = json.load(file_object)
     ts=None
     path = parser_mediator.GetFileEntry().path_spec.location
-    attr={"id":path.split("/")[-2]}
-    if not "id" in j or ( j["id"]!=attr["id"]):
+    attr={"layer_id":path.split("/")[-2]}
+    if not "id" in j or ( j["id"]!=attr["layer_id"]):
       # Not a docker layer JSON file
       return
     if "created" in j:
       ts=self._GetDateTimeFromString(j["created"])
-      attr["command"]=" ".join([ x.strip() for x in j["container_config"]["Cmd"]])
+      attr["command"]=" ".join([ x.strip() for x in j["container_config"]["Cmd"]]).replace('\t','')
       parser_mediator.ProduceEvent(DockerJSONLayerEvent(ts,eventdata.EventTimestamp.ADDED_TIME,attr))
 
 
@@ -87,8 +88,8 @@ class DockerJSONParser(interface.FileObjectParser):
     j = json.load(file_object)
     ts=None
     path = parser_mediator.GetFileEntry().path_spec.location
-    attr={"id":path.split("/")[-2]}
-    if not "ID" in j or ( j["ID"]!=attr["id"]):
+    attr={"container_id":path.split("/")[-2]}
+    if not "ID" in j or ( j["ID"]!=attr["container_id"]):
       # Not a docker container JSON file
       return
     if "State" in j:
@@ -97,9 +98,12 @@ class DockerJSONParser(interface.FileObjectParser):
         attr["action"]="Container Started"
         parser_mediator.ProduceEvent(DockerJSONContainerEvent(ts,eventdata.EventTimestamp.START_TIME,attr))
       if "FinishedAt" in j["State"]:
-        ts=self._GetDateTimeFromString(j["State"]["FinishedAt"])
-        attr["action"]="Container Finished"
-        parser_mediator.ProduceEvent(DockerJSONContainerEvent(ts,eventdata.EventTimestamp.END_TIME,attr))
+        ts = j["State"]["FinishedAt"]
+        if not ts == "0001-01-01T00:00:00Z": # I assume the container is still running
+          attr["action"]="Container Finished"
+          parser_mediator.ProduceEvent(DockerJSONContainerEvent(self._GetDateTimeFromString(ts),
+                                                                eventdata.EventTimestamp.END_TIME,attr)
+                                       )
     if "Created" in j:
       ts=self._GetDateTimeFromString(j["Created"])
       attr["action"]="Container Created"
@@ -121,7 +125,6 @@ class DockerJSONEvent(time_events.TimestampEvent):
 
   def __init__(self, timestamp, event_type,attributes):
     super(DockerJSONEvent, self).__init__(timestamp, event_type)
-    self.id_=attributes['id']
 
 
 class DockerJSONContainerEvent(DockerJSONEvent):
@@ -130,6 +133,7 @@ class DockerJSONContainerEvent(DockerJSONEvent):
   DATA_TYPE = u'docker:json:container'
   def __init__(self, timestamp, event_type,attributes):
     super(DockerJSONContainerEvent, self).__init__(timestamp, event_type,attributes)
+    self.container_id=attributes['container_id']
     self.action=attributes['action']
 
 
@@ -140,6 +144,7 @@ class DockerJSONLayerEvent(DockerJSONEvent):
   def __init__(self, timestamp, event_type,attributes):
     super(DockerJSONLayerEvent, self).__init__(timestamp, event_type,attributes)
     self.command=attributes['command']
+    self.layer_id=attributes['layer_id']
 
 manager.ParsersManager.RegisterParsers([
     DockerJSONParser,
