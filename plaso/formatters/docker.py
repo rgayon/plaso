@@ -22,15 +22,11 @@ class DockerLayerEventFormatter(
   DATA_TYPE = u'docker:json:layer'
 
   FORMAT_STRING_PIECES= (
-      u'Layer ID: {id}',
-      u'Command: {cmd}'
-  )
-  FORMAT_STRING_SHORT_PIECES= (
-      u'ID: {id}',
-      u'Cmd: {cmd}'
+      u'Layer ID: {layer_id}',
+      u'Command: {command}'
   )
 
-  SOURCE_LONG = u'Docker Layer Event'
+  SOURCE_LONG = u'Docker Layer'
   SOURCE_SHORT = u'DOCKER'
 
 class DockerContainerEventFormatter(
@@ -40,10 +36,10 @@ class DockerContainerEventFormatter(
   DATA_TYPE = u'docker:json:container'
 
   FORMAT_STRING_PIECES = [
-      u'Container ID: {id}',
+      u'Container ID: {container_id}',
       u'Action: {action}']
 
-  SOURCE_LONG = u'Docker Container Event'
+  SOURCE_LONG = u'Docker Container'
   SOURCE_SHORT = u'DOCKER'
 
 
