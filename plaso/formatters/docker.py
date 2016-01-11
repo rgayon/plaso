@@ -49,8 +49,8 @@ class DockerContainerEventFormatter(
   DATA_TYPE = u'docker:json:container'
 
   FORMAT_STRING_PIECES = [
-      u'Container ID: {container_id}',
       u'Container Name: {container_name}',
+      u'Container ID: {container_id}',
       u'Action: {action}']
 
   SOURCE_LONG = u'Docker Container'
