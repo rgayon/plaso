@@ -9,6 +9,7 @@ import os
 import sys
 
 from plaso.events import time_events
+from plaso.events import text_events
 from plaso.lib import errors
 from plaso.lib import eventdata
 from plaso.lib import timelib
@@ -47,8 +48,8 @@ class DockerJSONParser(interface.FileObjectParser):
       if json_file_path.find("/containers")> 0 :
         if json_file_path.find("/config.json") >0:
           self._ParseContainerConfigJSON(file_object, parser_mediator)
-#        if json_file_path.find("-json.log") > 0 :
-#          self._ParseContainerLogJSON(file_object, parser_mediator)
+        if json_file_path.find("-json.log") > 0 :
+          self._ParseContainerLogJSON(file_object, parser_mediator)
       elif json_file_path.find("/graph")> 0 :
         if json_file_path.find("/json") >0:
           self._ParseLayerConfigJSON(file_object, parser_mediator)
@@ -62,12 +63,18 @@ class DockerJSONParser(interface.FileObjectParser):
         raise exception
 
   def _GetDateTimeFromString(self, ss):
-    s=ss.replace("Z","")
-    d=datetime(1,1,1) # Looks like it's Docker's default timestamp
+    s = ss.replace("Z","")
+#    d=datetime(1,1,1) # Looks like it's Docker's default timestamp
     if len(s)  >= 26:
       # Slicing to 26 because python doesn't understand nanosec timestamps
-      d= datetime.strptime(s[:26],"%Y-%m-%dT%H:%M:%S.%f")
+      d = datetime.strptime(s[:26],"%Y-%m-%dT%H:%M:%S.%f")
+    else:
+      try:
+        d = datetime.strptime(s,"%Y-%m-%dT%H:%M:%S.%f")
+      except ValueError:
+        d = datetime.strptime(s,"%Y-%m-%dT%H:%M:%S")
 
+ 
     return  timelib.Timestamp.FromPythonDatetime(d)
 
   def _ParseLayerConfigJSON(self,file_object,parser_mediator):
@@ -109,11 +116,18 @@ class DockerJSONParser(interface.FileObjectParser):
       attr["action"]="Container Created"
       parser_mediator.ProduceEvent(DockerJSONContainerEvent(ts,eventdata.EventTimestamp.ADDED_TIME,attr))
 
-#  def _ParseContainerLogJSON(file_object, parser_mediator):
-#    j = json.load(file_object)
-#    ts=None
-#    path = parser_mediator.GetFileEntry().path_spec.location
-#    _tab=path.split("/")
+  def _ParseContainerLogJSON(self, file_object, parser_mediator):
+    ts=None
+    path = parser_mediator.GetFileEntry().path_spec.location
+    attr={"container_id":path.split("/")[-2]}
+
+    for log_line in file_object.read().splitlines():
+      json_log_line= json.loads(log_line)
+      if "log" in json_log_line and "time" in json_log_line:
+        attr["log_line"]=json_log_line["log"]
+        attr["log_source"]=json_log_line["stream"]
+        ts = self._GetDateTimeFromString(json_log_line["time"])
+        parser_mediator.ProduceEvent(DockerJSONContainerLogEvent(ts,0,attr))
 #      # Not a docker container JSON file
 #      return
 
@@ -125,6 +139,10 @@ class DockerJSONEvent(time_events.TimestampEvent):
 
   def __init__(self, timestamp, event_type,attributes):
     super(DockerJSONEvent, self).__init__(timestamp, event_type)
+
+class DockerJSONContainerLogEvent(text_events.TextEvent):
+  DATA_TYPE = u'docker:json:container:log'
+
 
 
 class DockerJSONContainerEvent(DockerJSONEvent):

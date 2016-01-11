@@ -15,6 +15,19 @@ class DockerEventFormatter(interface.ConditionalEventFormatter):
 
   SOURCE_SHORT = u'DOCKER'
 
+class DockerContainerLogEventFormatter(interface.ConditionalEventFormatter):
+
+  DATA_TYPE = u'docker:json:container:log'
+
+  FORMAT_STRING_PIECES= (
+      u'Container ID: {container_id}',
+      u'text: {log_line}',
+      u'source: {log_source}',
+  )
+
+  SOURCE_LONG = u'Docker Container Logs'
+  SOURCE_SHORT = u'DOCKER'
+
 class DockerLayerEventFormatter(
     interface.ConditionalEventFormatter):
   """Formatter for a Docker Layer event."""
@@ -46,6 +59,7 @@ class DockerContainerEventFormatter(
 manager.FormattersManager.RegisterFormatters([
     DockerEventFormatter,
     DockerContainerEventFormatter,
+    DockerContainerLogEventFormatter,
     DockerLayerEventFormatter,
 ])
 
