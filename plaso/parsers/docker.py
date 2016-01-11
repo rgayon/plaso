@@ -96,6 +96,8 @@ class DockerJSONParser(interface.FileObjectParser):
     ts=None
     path = parser_mediator.GetFileEntry().path_spec.location
     attr={"container_id":path.split("/")[-2]}
+    if "Config" in j and "Hostname" in j["Config"]:
+      attr["container_name"] = j["Config"]["Hostname"] 
     if not "ID" in j or ( j["ID"]!=attr["container_id"]):
       # Not a docker container JSON file
       return
@@ -152,6 +154,7 @@ class DockerJSONContainerEvent(DockerJSONEvent):
   def __init__(self, timestamp, event_type,attributes):
     super(DockerJSONContainerEvent, self).__init__(timestamp, event_type,attributes)
     self.container_id=attributes['container_id']
+    self.container_name=attributes['container_name']
     self.action=attributes['action']
 
 

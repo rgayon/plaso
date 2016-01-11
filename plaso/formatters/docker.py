@@ -50,6 +50,7 @@ class DockerContainerEventFormatter(
 
   FORMAT_STRING_PIECES = [
       u'Container ID: {container_id}',
+      u'Container Name: {container_name}',
       u'Action: {action}']
 
   SOURCE_LONG = u'Docker Container'
