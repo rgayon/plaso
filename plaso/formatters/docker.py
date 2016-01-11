@@ -35,7 +35,7 @@ class DockerLayerEventFormatter(
   DATA_TYPE = u'docker:json:layer'
 
   FORMAT_STRING_PIECES= (
-      u'Command: {command}'
+      u'Command: {command}',
       u'Layer ID: {layer_id}',
   )
 
