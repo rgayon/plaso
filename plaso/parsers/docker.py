@@ -64,7 +64,6 @@ class DockerJSONParser(interface.FileObjectParser):
 
   def _GetDateTimeFromString(self, ss):
     s = ss.replace("Z","")
-#    d=datetime(1,1,1) # Looks like it's Docker's default timestamp
     if len(s)  >= 26:
       # Slicing to 26 because python doesn't understand nanosec timestamps
       d = datetime.strptime(s[:26],"%Y-%m-%dT%H:%M:%S.%f")
@@ -130,8 +129,6 @@ class DockerJSONParser(interface.FileObjectParser):
         attr["log_source"]=json_log_line["stream"]
         ts = self._GetDateTimeFromString(json_log_line["time"])
         parser_mediator.ProduceEvent(DockerJSONContainerLogEvent(ts,0,attr))
-#      # Not a docker container JSON file
-#      return
 
 
 class DockerJSONEvent(time_events.TimestampEvent):
