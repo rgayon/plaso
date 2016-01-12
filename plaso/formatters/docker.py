@@ -7,6 +7,7 @@ from plaso.formatters import manager
 
 class DockerEventFormatter(interface.ConditionalEventFormatter):
   """Formatter for a Docker event."""
+  # Basically not used directly, please extend.
 
   DATA_TYPE = u'docker:json'
 
