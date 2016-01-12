@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Parser for the Docker conf files
-
-"""
+"""Parser for the Docker conf files."""
 
 from datetime import datetime
 import json
@@ -17,15 +15,23 @@ from plaso.parsers import interface
 
 
 class DockerJSONParser(interface.FileObjectParser):
-  """ An empty docstring """
+  """ Will generate various events from Docker json config and log files.
+      This handles :
+      - Per container config file
+        DOCKER_DIR/containers/<container_id>/config.json
+      - Per container stdout/stderr output log
+        DOCKER_DIR/containers/<container_id>/<container_id>-json.log
+      - Filesystem layer config files
+        DOCKER_DIR/graph/<layer_id>/json
+  """
 
   NAME = u'dockerjson'
   DESCRIPTION = u'Parser for JSON Docker files.'
 
   def ParseFileObject(self, parser_mediator, file_object):
 
-    # Should we check for the path before the content is actually JSON?
-    # First pass check for initial character being open brace.
+    # Trivial check if we actually have a JSON file
+    #   check for initial character being open brace.
     file_object.seek(0, os.SEEK_SET)
 
     if file_object.read(1) != b'{':
@@ -36,12 +42,11 @@ class DockerJSONParser(interface.FileObjectParser):
 
     file_object.seek(0, os.SEEK_SET)
 
-
     # We need the path to the file to know what it describes
     try:
       json_file_path = parser_mediator.GetFileEntry().path_spec.location
     except AttributeError as exception:
-      # This happens on compressed JSON files
+      # Compressed JSON file
       json_file_path = parser_mediator.GetFileEntry().path_spec.parent.location
     try:
       if json_file_path.find("/containers") > 0:
@@ -62,6 +67,7 @@ class DockerJSONParser(interface.FileObjectParser):
         raise exception
 
   def _GetDateTimeFromString(self, ss):
+    """Converts text timestamps from JSON files into Timestamps """
     s = ss.replace("Z", "")
     if len(s) >= 26:
       # Slicing to 26 because python doesn't understand nanosec timestamps
@@ -146,7 +152,8 @@ class DockerJSONParser(interface.FileObjectParser):
 
 
 class DockerJSONEvent(time_events.TimestampEvent):
-  """Event for stuff parsed from any Docker JSON file."""
+  """Default event for stuff parsed from any Docker JSON file."""
+  # Basically not used directly
 
   DATA_TYPE = u'docker:json'
 
