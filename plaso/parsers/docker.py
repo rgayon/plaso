@@ -6,7 +6,6 @@
 from datetime import datetime
 import json
 import os
-import sys
 
 from plaso.events import time_events
 from plaso.events import text_events
@@ -45,16 +44,16 @@ class DockerJSONParser(interface.FileObjectParser):
       # This happens on compressed JSON files
       json_file_path = parser_mediator.GetFileEntry().path_spec.parent.location
     try:
-      if json_file_path.find("/containers")> 0 :
-        if json_file_path.find("/config.json") >0:
+      if json_file_path.find("/containers") > 0:
+        if json_file_path.find("/config.json") > 0:
           self._ParseContainerConfigJSON(file_object, parser_mediator)
-        if json_file_path.find("-json.log") > 0 :
+        if json_file_path.find("-json.log") > 0:
           self._ParseContainerLogJSON(file_object, parser_mediator)
-      elif json_file_path.find("/graph")> 0 :
-        if json_file_path.find("/json") >0:
+      elif json_file_path.find("/graph") > 0:
+        if json_file_path.find("/json") > 0:
           self._ParseLayerConfigJSON(file_object, parser_mediator)
     except ValueError as exception:
-      if exception=="No JSON object could be decoded":
+      if exception == "No JSON object could be decoded":
         raise errors.UnableToParseFile((
             u'[{0:s}] Unable to parse file {1:s} as '
             u'JSON: {2:s}').format(
@@ -63,72 +62,87 @@ class DockerJSONParser(interface.FileObjectParser):
         raise exception
 
   def _GetDateTimeFromString(self, ss):
-    s = ss.replace("Z","")
-    if len(s)  >= 26:
+    s = ss.replace("Z", "")
+    if len(s) >= 26:
       # Slicing to 26 because python doesn't understand nanosec timestamps
-      d = datetime.strptime(s[:26],"%Y-%m-%dT%H:%M:%S.%f")
+      d = datetime.strptime(s[:26], "%Y-%m-%dT%H:%M:%S.%f")
     else:
       try:
-        d = datetime.strptime(s,"%Y-%m-%dT%H:%M:%S.%f")
+        d = datetime.strptime(s, "%Y-%m-%dT%H:%M:%S.%f")
       except ValueError:
-        d = datetime.strptime(s,"%Y-%m-%dT%H:%M:%S")
-
- 
+        d = datetime.strptime(s, "%Y-%m-%dT%H:%M:%S")
     return  timelib.Timestamp.FromPythonDatetime(d)
 
-  def _ParseLayerConfigJSON(self,file_object,parser_mediator):
+  def _ParseLayerConfigJSON(self, file_object, parser_mediator):
     j = json.load(file_object)
-    ts=None
+    ts = None
     path = parser_mediator.GetFileEntry().path_spec.location
-    attr={"layer_id":path.split("/")[-2]}
-    if not "id" in j or ( j["id"]!=attr["layer_id"]):
-      # Not a docker layer JSON file
+    attr = {"layer_id":path.split("/")[-2]}
+    if "id" not in j or (j["id"] != attr["layer_id"]):
+      # Not a docker layer JSON file ?
       return
     if "created" in j:
-      ts=self._GetDateTimeFromString(j["created"])
-      attr["command"]=" ".join([ x.strip() for x in j["container_config"]["Cmd"]]).replace('\t','')
-      parser_mediator.ProduceEvent(DockerJSONLayerEvent(ts,eventdata.EventTimestamp.ADDED_TIME,attr))
+      ts = self._GetDateTimeFromString(j["created"])
+      attr["command"] = " ".join(
+          [x.strip() for x in j["container_config"]["Cmd"]]
+          ).replace('\t', '')
+      parser_mediator.ProduceEvent(
+          DockerJSONLayerEvent(ts,
+                               eventdata.EventTimestamp.ADDED_TIME,
+                               attr)
+          )
 
 
-  def _ParseContainerConfigJSON(self,file_object,parser_mediator):
+  def _ParseContainerConfigJSON(self, file_object, parser_mediator):
     j = json.load(file_object)
-    ts=None
+    ts = None
     path = parser_mediator.GetFileEntry().path_spec.location
-    attr={"container_id":path.split("/")[-2]}
+    attr = {"container_id":path.split("/")[-2]}
     if "Config" in j and "Hostname" in j["Config"]:
-      attr["container_name"] = j["Config"]["Hostname"] 
-    if not "ID" in j or ( j["ID"]!=attr["container_id"]):
+      attr["container_name"] = j["Config"]["Hostname"]
+    if "ID" not in j or (j["ID"] != attr["container_id"]):
       # Not a docker container JSON file
       return
     if "State" in j:
       if "StartedAt" in j["State"]:
-        ts=self._GetDateTimeFromString(j["State"]["StartedAt"])
-        attr["action"]="Container Started"
-        parser_mediator.ProduceEvent(DockerJSONContainerEvent(ts,eventdata.EventTimestamp.START_TIME,attr))
+        ts = self._GetDateTimeFromString(j["State"]["StartedAt"])
+        attr["action"] = "Container Started"
+        parser_mediator.ProduceEvent(
+            DockerJSONContainerEvent(ts,
+                                     eventdata.EventTimestamp.START_TIME,
+                                     attr)
+        )
       if "FinishedAt" in j["State"]:
-        ts = j["State"]["FinishedAt"]
-        if not ts == "0001-01-01T00:00:00Z": # I assume the container is still running
-          attr["action"]="Container Finished"
-          parser_mediator.ProduceEvent(DockerJSONContainerEvent(self._GetDateTimeFromString(ts),
-                                                                eventdata.EventTimestamp.END_TIME,attr)
-                                       )
+        if j["State"]["FinishedAt"] != "0001-01-01T00:00:00Z":
+          # I assume the container is still running
+          attr["action"] = "Container Finished"
+          ts = self._GetDateTimeFromString(j["State"]["FinishedAt"])
+          parser_mediator.ProduceEvent(
+              DockerJSONContainerEvent(ts,
+                                       eventdata.EventTimestamp.END_TIME,
+                                       attr)
+          )
     if "Created" in j:
-      ts=self._GetDateTimeFromString(j["Created"])
-      attr["action"]="Container Created"
-      parser_mediator.ProduceEvent(DockerJSONContainerEvent(ts,eventdata.EventTimestamp.ADDED_TIME,attr))
+      ts = self._GetDateTimeFromString(j["Created"])
+      attr["action"] = "Container Created"
+      parser_mediator.ProduceEvent(
+          DockerJSONContainerEvent(ts,
+                                   eventdata.EventTimestamp.ADDED_TIME,
+                                   attr)
+      )
 
   def _ParseContainerLogJSON(self, file_object, parser_mediator):
-    ts=None
+    ts = None
     path = parser_mediator.GetFileEntry().path_spec.location
-    attr={"container_id":path.split("/")[-2]}
+    attr = {"container_id":path.split("/")[-2]}
 
     for log_line in file_object.read().splitlines():
-      json_log_line= json.loads(log_line)
+      json_log_line = json.loads(log_line)
       if "log" in json_log_line and "time" in json_log_line:
-        attr["log_line"]=json_log_line["log"]
-        attr["log_source"]=json_log_line["stream"]
+        attr["log_line"] = json_log_line["log"]
+        attr["log_source"] = json_log_line["stream"]
         ts = self._GetDateTimeFromString(json_log_line["time"])
-        parser_mediator.ProduceEvent(DockerJSONContainerLogEvent(ts,0,attr))
+        parser_mediator.ProduceEvent(DockerJSONContainerLogEvent(ts, 0, attr))
 
 
 class DockerJSONEvent(time_events.TimestampEvent):
@@ -136,8 +150,9 @@ class DockerJSONEvent(time_events.TimestampEvent):
 
   DATA_TYPE = u'docker:json'
 
-  def __init__(self, timestamp, event_type,attributes):
+  def __init__(self, timestamp, event_type, attributes):
     super(DockerJSONEvent, self).__init__(timestamp, event_type)
+    self.attributes = attributes
 
 class DockerJSONContainerLogEvent(text_events.TextEvent):
   DATA_TYPE = u'docker:json:container:log'
@@ -148,21 +163,25 @@ class DockerJSONContainerEvent(DockerJSONEvent):
   """Event for stuff parsed from Containers' config.json files."""
 
   DATA_TYPE = u'docker:json:container'
-  def __init__(self, timestamp, event_type,attributes):
-    super(DockerJSONContainerEvent, self).__init__(timestamp, event_type,attributes)
-    self.container_id=attributes['container_id']
-    self.container_name=attributes['container_name']
-    self.action=attributes['action']
+  def __init__(self, timestamp, event_type, attributes):
+    super(DockerJSONContainerEvent, self).__init__(timestamp,
+                                                   event_type,
+                                                   attributes)
+    self.container_id = attributes['container_id']
+    self.container_name = attributes['container_name']
+    self.action = attributes['action']
 
 
 class DockerJSONLayerEvent(DockerJSONEvent):
   """ Event for stuff from graph/**/json """
 
   DATA_TYPE = u'docker:json:layer'
-  def __init__(self, timestamp, event_type,attributes):
-    super(DockerJSONLayerEvent, self).__init__(timestamp, event_type,attributes)
-    self.command=attributes['command']
-    self.layer_id=attributes['layer_id']
+  def __init__(self, timestamp, event_type, attributes):
+    super(DockerJSONLayerEvent, self).__init__(timestamp,
+                                               event_type,
+                                               attributes)
+    self.command = attributes['command']
+    self.layer_id = attributes['layer_id']
 
 manager.ParsersManager.RegisterParsers([
     DockerJSONParser,
