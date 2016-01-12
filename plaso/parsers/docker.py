@@ -68,6 +68,9 @@ class DockerJSONParser(interface.FileObjectParser):
 
   def _GetDateTimeFromString(self, ss):
     """Converts text timestamps from JSON files into Timestamps """
+    # Docker uses Go time lib, and RFC3339 times. This isn't supposed to
+    # happen in stdlib before python 3.6. See http://bugs.python.org/issue15873
+    # This is a cheap hack to reuse existing timelib
     s = ss.replace("Z", "")
     if len(s) >= 26:
       # Slicing to 26 because python doesn't understand nanosec timestamps
