@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Parser for the Docker conf files."""
+"""Parser for Docker configuration and log files."""
 
 from datetime import datetime
 import json
@@ -70,7 +70,7 @@ class DockerJSONParser(interface.FileObjectParser):
     """Converts text timestamps from JSON files into Timestamps """
     # Docker uses Go time lib, and RFC3339 times. This isn't supposed to
     # happen in stdlib before python 3.6. See http://bugs.python.org/issue15873
-    # This is a cheap hack to reuse existing timelib
+    # This is a cheap hack to reuse existing timelib functions.
     s = ss.replace("Z", "")
     if len(s) >= 26:
       # Slicing to 26 because python doesn't understand nanosec timestamps
@@ -83,6 +83,10 @@ class DockerJSONParser(interface.FileObjectParser):
     return  timelib.Timestamp.FromPythonDatetime(d)
 
   def _ParseLayerConfigJSON(self, file_object, parser_mediator):
+    """This handles :
+      - Filesystem layer config files
+        DOCKER_DIR/graph/<layer_id>/json
+    """
     j = json.load(file_object)
     ts = None
     path = parser_mediator.GetFileEntry().path_spec.location
@@ -103,6 +107,10 @@ class DockerJSONParser(interface.FileObjectParser):
 
 
   def _ParseContainerConfigJSON(self, file_object, parser_mediator):
+    """ This handles :
+      - Per container config file
+        DOCKER_DIR/containers/<container_id>/config.json
+    """
     j = json.load(file_object)
     ts = None
     path = parser_mediator.GetFileEntry().path_spec.location
@@ -141,11 +149,16 @@ class DockerJSONParser(interface.FileObjectParser):
       )
 
   def _ParseContainerLogJSON(self, file_object, parser_mediator):
+    """This handles :
+      - Per container stdout/stderr output log
+        DOCKER_DIR/containers/<container_id>/<container_id>-json.log
+    """
     ts = None
     path = parser_mediator.GetFileEntry().path_spec.location
     attr = {"container_id":path.split("/")[-2]}
 
     for log_line in file_object.read().splitlines():
+      # The format is 1 JSON formatted log message per line
       json_log_line = json.loads(log_line)
       if "log" in json_log_line and "time" in json_log_line:
         attr["log_line"] = json_log_line["log"]
@@ -156,7 +169,7 @@ class DockerJSONParser(interface.FileObjectParser):
 
 class DockerJSONEvent(time_events.TimestampEvent):
   """Default event for stuff parsed from any Docker JSON file."""
-  # Basically not used directly
+  # Basically not used directly, please extend.
 
   DATA_TYPE = u'docker:json'
 
@@ -166,8 +179,6 @@ class DockerJSONEvent(time_events.TimestampEvent):
 
 class DockerJSONContainerLogEvent(text_events.TextEvent):
   DATA_TYPE = u'docker:json:container:log'
-
-
 
 class DockerJSONContainerEvent(DockerJSONEvent):
   """Event for stuff parsed from Containers' config.json files."""
