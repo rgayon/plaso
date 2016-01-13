@@ -92,15 +92,38 @@ class DockerJSONUnitTest(test_lib.ParserTestCase):
   def _testParseLayerConfig(self):
     """Tests the _ParseLayerConfigJSON function."""
     test_file = self._GetTestFilePath([u'docker',
-                                       u'containers',
+                                       u'graph',
                                        u'e7d0b7ea5ccf08366e2b0c8afa2318674e8aefe802315378125d2bb83fe3110c',
-                                       u'container-json.log'])
+                                       u'json'])
 
+    event_queue_consumer = self._ParseFile(self._parser, test_file)
+    event_objects = self._GetEventObjectsFromQueue(event_queue_consumer)
+
+    self.assertEqual(len(event_objects), 1)
+
+    e_o = event_objects[0]
+    print e_o
+
+    self.assertEqual( e_o.command, expected_cmd)
+    expected_cmd = "/bin/sh -c echo '#!/bin/sh' > /usr/sbin/policy-rc.d && ",
+                   "echo 'exit 101' >> /usr/sbin/policy-rc.d && chmod +x ",
+                   "/usr/sbin/policy-rc.d && dpkg-divert --local --rename ",
+                   "--add /sbin/initctl && cp -a /usr/sbin/policy-rc.d ",
+                   "/sbin/initctl && sed -i 's/^exit.*/exit 0/' ",
+                   "/sbin/initctl && echo 'force-unsafe-io' > ",
+                   "/etc/dpkg/dpkg.cfg.d/docker-apt-speedup && echo ",
+                   "'DPkg::Post-Invoke { \"rm -f /var/cache/apt/archives/",
+                   "*.deb /var/cache/apt/archives/partial/*.deb ",
+                   "/var/cache/apt/*.bin || true\"; };'"
+    self.assertEqual( e_o.command, expected_cmd)
+    self.assertEqual(e_o.layer_id, "e7d0b7ea5ccf08366e2b0c8afa2318674e8aefe802315378125d2bb83fe3110c")
+    self.assertEqual(e_o.timestamp, 1444670821623276)
+    self.assertEqual(e_o.timestamp_desc, "Creation Time")
 
   def testParse(self):
     self._testParseContainerConfig()
-#    self._testParseContainerLog()
-#    self._testParseLayerConfig()
+    self._testParseContainerLog()
+    self._testParseLayerConfig()
 
 if __name__ == '__main__':
   unittest.main()
