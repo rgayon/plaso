@@ -42,16 +42,16 @@ class DockerJSONUnitTest(test_lib.ParserTestCase):
                       u'2016-01-07 16:49:10.237222']
 
     expected_log = (
-        u'\x1b]0;root@e7d0b7ea5ccf: u'
+        u'\x1b]0;root@e7d0b7ea5ccf: '
         u'/home/plaso\x07root@e7d0b7ea5ccf:/home/plaso# ls\r\n')
 
     expected_msg = (
-        u'Text: u'
+        u'Text: '
         u'\x1b]0;root@e7d0b7ea5ccf: /home/plaso\x07root@e7d0b7ea5ccf:'
-        u'/home/plaso# ls, Container ID: %s u'
+        u'/home/plaso# ls, Container ID: %s, '
         u'Source: stdout'%cid)
     expected_msg_short = (
-        u'Text: u'
+        u'Text: '
         u'\x1b]0;root@e7d0b7ea5ccf: /home/plaso\x07root@e7d0b7ea5ccf:'
         u'/home/plaso# ls, C...'
         )
@@ -94,12 +94,13 @@ class DockerJSONUnitTest(test_lib.ParserTestCase):
 
   def _testParseLayerConfig(self):
     """Tests the _ParseLayerConfigJSON function."""
-    lid = u'e7d0b7ea5ccf08366e2b0c8afa2318674e8aefe802315378125d2bb83fe3110c'
+    lid = u'3c9a9d7cc6a235eb2de58ca9ef3551c67ae42a991933ba4958d207b29142902b'
     test_file = self._GetTestFilePath(['docker',
                                        u'graph',
                                        lid,
                                        u'json'])
 
+    print test_file
     event_queue_consumer = self._ParseFile(self._parser, test_file)
     event_objects = self._GetEventObjectsFromQueue(event_queue_consumer)
 
@@ -107,7 +108,7 @@ class DockerJSONUnitTest(test_lib.ParserTestCase):
 
     e_o = event_objects[0]
 
-    expected_cmd = (u'/bin/sh -c sed -i \'s/^#\\s*\\(deb.*universe\\)$/\\1/g\''
+    expected_cmd = (u'/bin/sh -c sed -i \'s/^#\\s*\\(deb.*universe\\)$/\\1/g\' '
                     u'/etc/apt/sources.list')
     self.assertEqual(e_o.command, expected_cmd)
     self.assertEqual(e_o.layer_id, lid)
