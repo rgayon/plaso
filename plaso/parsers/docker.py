@@ -173,9 +173,8 @@ class DockerJSONEvent(time_events.TimestampEvent):
 
   DATA_TYPE = u'docker:json'
 
-  def __init__(self, timestamp, event_type, attributes):
+  def __init__(self, timestamp, event_type):
     super(DockerJSONEvent, self).__init__(timestamp, event_type)
-    self.attributes = attributes
 
 class DockerJSONContainerLogEvent(text_events.TextEvent):
   DATA_TYPE = u'docker:json:container:log'
@@ -186,8 +185,8 @@ class DockerJSONContainerEvent(DockerJSONEvent):
   DATA_TYPE = u'docker:json:container'
   def __init__(self, timestamp, event_type, attributes):
     super(DockerJSONContainerEvent, self).__init__(timestamp,
-                                                   event_type,
-                                                   attributes)
+                                                   event_type
+                                                   )
     self.container_id = attributes['container_id']
     self.container_name = attributes['container_name']
     self.action = attributes['action']
@@ -199,8 +198,7 @@ class DockerJSONLayerEvent(DockerJSONEvent):
   DATA_TYPE = u'docker:json:layer'
   def __init__(self, timestamp, event_type, attributes):
     super(DockerJSONLayerEvent, self).__init__(timestamp,
-                                               event_type,
-                                               attributes)
+                                               event_type)
     self.command = attributes['command']
     self.layer_id = attributes['layer_id']
 
