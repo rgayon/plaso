@@ -190,8 +190,7 @@ class DockerJSONContainerEvent(DockerJSONEvent):
   DATA_TYPE = u'docker:json:container'
   def __init__(self, timestamp, event_type, attributes):
     super(DockerJSONContainerEvent, self).__init__(timestamp,
-                                                   event_type
-                                                   )
+                                                   event_type)
     self.container_id = attributes['container_id']
     self.container_name = attributes['container_name']
     self.action = attributes['action']
