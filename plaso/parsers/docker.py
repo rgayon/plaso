@@ -120,7 +120,8 @@ class DockerJSONParser(interface.FileObjectParser):
     path = parser_mediator.GetFileEntry().path_spec.location
     attr = {u'container_id':path.split(u'/')[-2]}
     # Basic checks
-    if u'Driver' not in j or u'ID' not in j or (j[u'ID'] != attr[u'container_id']):
+    if u'Driver' not in j or u'ID' not in j or (
+        j[u'ID'] != attr[u'container_id']):
       # Not a docker container JSON file
       return
     if u'Config' in j and u'Hostname' in j[u'Config']:
