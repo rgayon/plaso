@@ -93,7 +93,7 @@ class DockerJSONUnitTest(test_lib.ParserTestCase):
     """Tests the _ParseLayerConfigJSON function."""
     test_file = self._GetTestFilePath([u'docker',
                                        u'graph',
-                                       u'e7d0b7ea5ccf08366e2b0c8afa2318674e8aefe802315378125d2bb83fe3110c',
+                                       u'3c9a9d7cc6a235eb2de58ca9ef3551c67ae42a991933ba4958d207b29142902b',
                                        u'json'])
 
     event_queue_consumer = self._ParseFile(self._parser, test_file)
@@ -102,22 +102,11 @@ class DockerJSONUnitTest(test_lib.ParserTestCase):
     self.assertEqual(len(event_objects), 1)
 
     e_o = event_objects[0]
-    print e_o
 
+    expected_cmd = "/bin/sh -c sed -i 's/^#\\s*\\(deb.*universe\\)$/\\1/g' /etc/apt/sources.list"
     self.assertEqual( e_o.command, expected_cmd)
-    expected_cmd = "/bin/sh -c echo '#!/bin/sh' > /usr/sbin/policy-rc.d && ",
-                   "echo 'exit 101' >> /usr/sbin/policy-rc.d && chmod +x ",
-                   "/usr/sbin/policy-rc.d && dpkg-divert --local --rename ",
-                   "--add /sbin/initctl && cp -a /usr/sbin/policy-rc.d ",
-                   "/sbin/initctl && sed -i 's/^exit.*/exit 0/' ",
-                   "/sbin/initctl && echo 'force-unsafe-io' > ",
-                   "/etc/dpkg/dpkg.cfg.d/docker-apt-speedup && echo ",
-                   "'DPkg::Post-Invoke { \"rm -f /var/cache/apt/archives/",
-                   "*.deb /var/cache/apt/archives/partial/*.deb ",
-                   "/var/cache/apt/*.bin || true\"; };'"
-    self.assertEqual( e_o.command, expected_cmd)
-    self.assertEqual(e_o.layer_id, "e7d0b7ea5ccf08366e2b0c8afa2318674e8aefe802315378125d2bb83fe3110c")
-    self.assertEqual(e_o.timestamp, 1444670821623276)
+    self.assertEqual(e_o.layer_id, "3c9a9d7cc6a235eb2de58ca9ef3551c67ae42a991933ba4958d207b29142902b")
+    self.assertEqual(e_o.timestamp, 1444670823079273)
     self.assertEqual(e_o.timestamp_desc, "Creation Time")
 
   def testParse(self):
