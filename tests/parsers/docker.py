@@ -17,12 +17,8 @@ class DockerJSONUnitTest(test_lib.ParserTestCase):
     """Makes preparations before running an individual test."""
     self._parser = docker.DockerJSONParser()
 
-  def testParse(self):
-    self._testParseLog()
-
-  def _testParseLog(self):
-
-    """Tests the Parse function."""
+  def _testParseContainerLog(self):
+    """Tests the _ParseContainerLogJSON function."""
     test_file = self._GetTestFilePath([u'docker',
                                        u'containers',
                                        u'e7d0b7ea5ccf08366e2b0c8afa2318674e8aefe802315378125d2bb83fe3110c',
@@ -66,10 +62,45 @@ class DockerJSONUnitTest(test_lib.ParserTestCase):
       self.assertEqual(event_objects[index].container_id,"e7d0b7ea5ccf08366e2b0c8afa2318674e8aefe802315378125d2bb83fe3110c")
       self.assertEqual(event_objects[index].log_line,expected_log)
       self.assertEqual(event_objects[index].log_source,"stdout")
-
-
-
       self._TestGetMessageStrings(event_object, expected_msg, expected_msg_short)
+
+  def _testParseContainerConfig(self):
+    """Tests the _ParseContainerConfigJSON function."""
+    test_file = self._GetTestFilePath([u'docker',
+                                       u'containers',
+                                       u'e7d0b7ea5ccf08366e2b0c8afa2318674e8aefe802315378125d2bb83fe3110c',
+                                       u'config.json'])
+
+    event_queue_consumer = self._ParseFile(self._parser, test_file)
+    event_objects = self._GetEventObjectsFromQueue(event_queue_consumer)
+
+    self.assertEqual(len(event_objects), 2)
+
+    e_o = event_objects[0]
+    self.assertEqual(e_o.timestamp, 1452185348674873)
+    self.assertEqual(e_o.action, "Container Started")
+    self.assertEqual(e_o.container_id, "e7d0b7ea5ccf08366e2b0c8afa2318674e8aefe802315378125d2bb83fe3110c")
+    self.assertEqual(e_o.container_name, "e7d0b7ea5ccf")
+
+    e_o = event_objects[1]
+    self.assertEqual(e_o.timestamp, 1452185348507979)
+    self.assertEqual(e_o.action, "Container Created")
+    self.assertEqual(e_o.container_id, "e7d0b7ea5ccf08366e2b0c8afa2318674e8aefe802315378125d2bb83fe3110c")
+    self.assertEqual(e_o.container_name, "e7d0b7ea5ccf")
+
+
+  def _testParseLayerConfig(self):
+    """Tests the _ParseLayerConfigJSON function."""
+    test_file = self._GetTestFilePath([u'docker',
+                                       u'containers',
+                                       u'e7d0b7ea5ccf08366e2b0c8afa2318674e8aefe802315378125d2bb83fe3110c',
+                                       u'container-json.log'])
+
+
+  def testParse(self):
+    self._testParseContainerConfig()
+#    self._testParseContainerLog()
+#    self._testParseLayerConfig()
 
 if __name__ == '__main__':
   unittest.main()
