@@ -23,7 +23,7 @@ class DockerContainerLogEventFormatter(interface.ConditionalEventFormatter):
   FORMAT_STRING_PIECES = (
       u'Text: {log_line},',
       u'Container ID: {container_id},',
-      u'Source: {log_source},',
+      u'Source: {log_source}',
   )
 
   SOURCE_LONG = u'Docker Container Logs'
