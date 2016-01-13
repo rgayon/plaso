@@ -91,8 +91,12 @@ class DockerJSONParser(interface.FileObjectParser):
     ts = None
     path = parser_mediator.GetFileEntry().path_spec.location
     attr = {"layer_id":path.split("/")[-2]}
-    if "id" not in j or (j["id"] != attr["layer_id"]):
+
+    # Basic checks
+    if "docker_version"  not in j:
       # Not a docker layer JSON file ?
+      return
+    if "id" in j and (j["id"] != attr["layer_id"]):
       return
     if "created" in j:
       ts = self._GetDateTimeFromString(j["created"])
@@ -115,11 +119,12 @@ class DockerJSONParser(interface.FileObjectParser):
     ts = None
     path = parser_mediator.GetFileEntry().path_spec.location
     attr = {"container_id":path.split("/")[-2]}
-    if "Config" in j and "Hostname" in j["Config"]:
-      attr["container_name"] = j["Config"]["Hostname"]
-    if "ID" not in j or (j["ID"] != attr["container_id"]):
+    # Basic checks
+    if "Driver" not in j or "ID" not in j or (j["ID"] != attr["container_id"]):
       # Not a docker container JSON file
       return
+    if "Config" in j and "Hostname" in j["Config"]:
+      attr["container_name"] = j["Config"]["Hostname"]
     if "State" in j:
       if "StartedAt" in j["State"]:
         ts = self._GetDateTimeFromString(j["State"]["StartedAt"])
