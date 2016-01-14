@@ -37,32 +37,31 @@ class DockerJSONFormatterTest(test_lib.EventFormatterTestCase):
     self._TestGetFormatStringAttributeNames(
         event_formatter, expected_attribute_names)
 
-    event_formatter = docker.DockerContainerEventFormatter()
+    event_formatter1 = docker.DockerContainerEventFormatter()
 
     expected_attribute_names = [u'action',
                                 u'container_id',
                                 u'container_name']
 
     self._TestGetFormatStringAttributeNames(
-        event_formatter, expected_attribute_names)
+        event_formatter1, expected_attribute_names)
 
-    event_formatter = docker.DockerContainerLogEventFormatter()
+    event_formatter2 = docker.DockerContainerLogEventFormatter()
 
     expected_attribute_names = [u'container_id',
                                 u'log_line',
                                 u'log_source']
 
     self._TestGetFormatStringAttributeNames(
-        event_formatter, expected_attribute_names)
+        event_formatter2, expected_attribute_names)
 
-    event_formatter = docker.DockerLayerEventFormatter()
+    event_formatter3 = docker.DockerLayerEventFormatter()
 
     expected_attribute_names = [u'command',
                                 u'layer_id']
 
     self._TestGetFormatStringAttributeNames(
-        event_formatter, expected_attribute_names)
-
+        event_formatter3, expected_attribute_names)
 
 
 if __name__ == '__main__':
