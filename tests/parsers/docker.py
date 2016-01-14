@@ -17,7 +17,7 @@ class DockerJSONUnitTest(test_lib.ParserTestCase):
     """Makes preparations before running an individual test."""
     self._parser = docker.DockerJSONParser()
 
-  def _testParseContainerLog(self):
+  def testParseContainerLog(self):
     """Tests the _ParseContainerLogJSON function."""
     cid = u'e7d0b7ea5ccf08366e2b0c8afa2318674e8aefe802315378125d2bb83fe3110c'
     test_file = self._GetTestFilePath([u'docker',
@@ -66,7 +66,7 @@ class DockerJSONUnitTest(test_lib.ParserTestCase):
                                   expected_msg,
                                   expected_msg_short)
 
-  def _testParseContainerConfig(self):
+  def testParseContainerConfig(self):
     """Tests the _ParseContainerConfigJSON function."""
     cid = u'e7d0b7ea5ccf08366e2b0c8afa2318674e8aefe802315378125d2bb83fe3110c'
     test_file = self._GetTestFilePath([u'docker',
@@ -80,19 +80,23 @@ class DockerJSONUnitTest(test_lib.ParserTestCase):
     self.assertEqual(len(event_objects), 2)
 
     e_o = event_objects[0]
-    self.assertEqual(e_o.timestamp, 1452185348674873)
+    expected_timestamp = timelib.Timestamp.CopyFromString(
+        u'2016-01-07 16:49:08.674873')
+    self.assertEqual(e_o.timestamp, expected_timestamp)
     self.assertEqual(e_o.action, u'Container Started')
     self.assertEqual(e_o.container_id, cid)
     self.assertEqual(e_o.container_name, u'e7d0b7ea5ccf')
 
     e_o = event_objects[1]
-    self.assertEqual(e_o.timestamp, 1452185348507979)
+    expected_timestamp = timelib.Timestamp.CopyFromString(
+        u'2016-01-07 16:49:08.507979')
+    self.assertEqual(e_o.timestamp, expected_timestamp)
     self.assertEqual(e_o.action, u'Container Created')
     self.assertEqual(e_o.container_id, cid)
     self.assertEqual(e_o.container_name, u'e7d0b7ea5ccf')
 
 
-  def _testParseLayerConfig(self):
+  def testParseLayerConfig(self):
     """Tests the _ParseLayerConfigJSON function."""
     lid = u'3c9a9d7cc6a235eb2de58ca9ef3551c67ae42a991933ba4958d207b29142902b'
     test_file = self._GetTestFilePath(['docker',
@@ -115,10 +119,6 @@ class DockerJSONUnitTest(test_lib.ParserTestCase):
     self.assertEqual(e_o.timestamp, 1444670823079273)
     self.assertEqual(e_o.timestamp_desc, 'Creation Time')
 
-  def testParse(self):
-    self._testParseContainerConfig()
-    self._testParseContainerLog()
-    self._testParseLayerConfig()
 
 if __name__ == '__main__':
   unittest.main()

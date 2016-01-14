@@ -5,9 +5,8 @@ from plaso.formatters import interface
 from plaso.formatters import manager
 
 
-class DockerEventFormatter(interface.ConditionalEventFormatter):
-  """Formatter for a Docker event."""
-  # Basically not used directly, please extend.
+class DockerBaseEventFormatter(interface.ConditionalEventFormatter):
+  """Class that contains common Docker event formatter functionality."""
 
   DATA_TYPE = u'docker:json'
 
@@ -15,6 +14,7 @@ class DockerEventFormatter(interface.ConditionalEventFormatter):
       u'{id}']
 
   SOURCE_SHORT = u'DOCKER'
+
 
 class DockerContainerLogEventFormatter(interface.ConditionalEventFormatter):
 
@@ -29,6 +29,7 @@ class DockerContainerLogEventFormatter(interface.ConditionalEventFormatter):
   SOURCE_LONG = u'Docker Container Logs'
   SOURCE_SHORT = u'DOCKER'
 
+
 class DockerLayerEventFormatter(
     interface.ConditionalEventFormatter):
   """Formatter for a Docker Layer event."""
@@ -42,6 +43,7 @@ class DockerLayerEventFormatter(
 
   SOURCE_LONG = u'Docker Layer'
   SOURCE_SHORT = u'DOCKER'
+
 
 class DockerContainerEventFormatter(
     interface.ConditionalEventFormatter):
@@ -60,9 +62,8 @@ class DockerContainerEventFormatter(
 
 
 manager.FormattersManager.RegisterFormatters([
-    DockerEventFormatter,
+    DockerBaseEventFormatter,
     DockerContainerEventFormatter,
     DockerContainerLogEventFormatter,
     DockerLayerEventFormatter,
 ])
-
