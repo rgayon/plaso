@@ -17,14 +17,14 @@ class DockerJSONFormatterTest(test_lib.EventFormatterTestCase):
     event_formatter = docker.DockerBaseEventFormatter()
     self.assertIsNotNone(event_formatter)
 
-    event_formatter1 = docker.DockerContainerEventFormatter()
-    self.assertIsNotNone(event_formatter1)
+    event_formatter = docker.DockerContainerEventFormatter()
+    self.assertIsNotNone(event_formatter)
 
-    event_formatter2 = docker.DockerContainerLogEventFormatter()
-    self.assertIsNotNone(event_formatter2)
+    event_formatter = docker.DockerContainerLogEventFormatter()
+    self.assertIsNotNone(event_formatter)
 
-    event_formatter3 = docker.DockerLayerEventFormatter()
-    self.assertIsNotNone(event_formatter3)
+    event_formatter = docker.DockerLayerEventFormatter()
+    self.assertIsNotNone(event_formatter)
 
 
   def testGetFormatStringAttributeNames(self):
@@ -37,31 +37,32 @@ class DockerJSONFormatterTest(test_lib.EventFormatterTestCase):
     self._TestGetFormatStringAttributeNames(
         event_formatter, expected_attribute_names)
 
-    event_formatter1 = docker.DockerContainerEventFormatter()
+    event_formatter = docker.DockerContainerEventFormatter()
 
     expected_attribute_names = [u'action',
                                 u'container_id',
                                 u'container_name']
 
     self._TestGetFormatStringAttributeNames(
-        event_formatter1, expected_attribute_names)
+        event_formatter, expected_attribute_names)
 
-    event_formatter2 = docker.DockerContainerLogEventFormatter()
+    event_formatter = docker.DockerContainerLogEventFormatter()
 
     expected_attribute_names = [u'container_id',
                                 u'log_line',
                                 u'log_source']
 
     self._TestGetFormatStringAttributeNames(
-        event_formatter2, expected_attribute_names)
+        event_formatter, expected_attribute_names)
 
-    event_formatter3 = docker.DockerLayerEventFormatter()
+    event_formatter = docker.DockerLayerEventFormatter()
 
     expected_attribute_names = [u'command',
                                 u'layer_id']
 
     self._TestGetFormatStringAttributeNames(
-        event_formatter3, expected_attribute_names)
+        event_formatter, expected_attribute_names)
+
 
 
 if __name__ == '__main__':
