@@ -17,14 +17,14 @@ class DockerJSONFormatterTest(test_lib.EventFormatterTestCase):
     event_formatter = docker.DockerBaseEventFormatter()
     self.assertIsNotNone(event_formatter)
 
-    event_formatter = docker.DockerContainerEventFormatter()
-    self.assertIsNotNone(event_formatter)
+    event_formatter1 = docker.DockerContainerEventFormatter()
+    self.assertIsNotNone(event_formatter1)
 
-    event_formatter = docker.DockerContainerLogEventFormatter()
-    self.assertIsNotNone(event_formatter)
+    event_formatter2 = docker.DockerContainerLogEventFormatter()
+    self.assertIsNotNone(event_formatter2)
 
-    event_formatter = docker.DockerLayerEventFormatter()
-    self.assertIsNotNone(event_formatter)
+    event_formatter3 = docker.DockerLayerEventFormatter()
+    self.assertIsNotNone(event_formatter3)
 
 
   def testGetFormatStringAttributeNames(self):
