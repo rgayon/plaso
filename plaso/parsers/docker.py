@@ -183,7 +183,8 @@ class DockerJSONParser(interface.FileObjectParser):
                 ts, eventdata.EventTimestamp.START_TIME, attr))
       if u'FinishedAt' in j['State']:
         if j['State']['FinishedAt'] != u'0001-01-01T00:00:00Z':
-          # I assume the container is still running
+          # If the timestamp is 0001-01-01T00:00:00Z, the container
+          # is still running, so we don't generate a Finished event
           attr['action'] = u'Container Finished'
           ts = self._GetDateTimeFromString(j['State']['FinishedAt'])
           parser_mediator.ProduceEvent(
