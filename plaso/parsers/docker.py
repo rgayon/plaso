@@ -117,7 +117,6 @@ class DockerJSONParser(interface.FileObjectParser):
       UnableToParseFile: when the file is not a valid layer config file.
     """
     j = json.load(file_object)
-    ts = None
     path = parser_mediator.GetFileEntry().path_spec.location
     attr = {u'layer_id':path.split(u'/')[-2]}
 
@@ -133,13 +132,13 @@ class DockerJSONParser(interface.FileObjectParser):
           u'(layer ID taken from the path to the JSON file.)').format(
               self.NAME, parser_mediator.GetDisplayName(), attr[u'layer_id']))
     if u'created' in j:
-      ts = self._GetDateTimeFromString(j[u'created'])
+      timestamp = self._GetDateTimeFromString(j[u'created'])
       attr[u'command'] = u' '.join(
           [x.strip() for x in j[u'container_config'][u'Cmd']]
           ).replace(u'\t', '')
       parser_mediator.ProduceEvent(
           DockerJSONLayerEvent(
-              ts, eventdata.EventTimestamp.ADDED_TIME, attr)
+              timestamp, eventdata.EventTimestamp.ADDED_TIME, attr)
           )
 
   def _ParseContainerConfigJSON(self, parser_mediator, file_object):
@@ -156,7 +155,6 @@ class DockerJSONParser(interface.FileObjectParser):
       UnableToParseFile: when the file is not a valid container config file.
     """
     j = json.load(file_object)
-    ts = None
     path = parser_mediator.GetFileEntry().path_spec.location
     attr = {u'container_id':path.split(u'/')[-2]}
 
@@ -176,26 +174,26 @@ class DockerJSONParser(interface.FileObjectParser):
       attr[u'container_name'] = j[u'Config'][u'Hostname']
     if u'State' in j:
       if u'StartedAt' in j[u'State']:
-        ts = self._GetDateTimeFromString(j[u'State'][u'StartedAt'])
+        timestamp = self._GetDateTimeFromString(j[u'State'][u'StartedAt'])
         attr[u'action'] = u'Container Started'
         parser_mediator.ProduceEvent(
             DockerJSONContainerEvent(
-                ts, eventdata.EventTimestamp.START_TIME, attr))
+                timestamp, eventdata.EventTimestamp.START_TIME, attr))
       if u'FinishedAt' in j['State']:
         if j['State']['FinishedAt'] != u'0001-01-01T00:00:00Z':
           # If the timestamp is 0001-01-01T00:00:00Z, the container
           # is still running, so we don't generate a Finished event
           attr['action'] = u'Container Finished'
-          ts = self._GetDateTimeFromString(j['State']['FinishedAt'])
+          timestamp = self._GetDateTimeFromString(j['State']['FinishedAt'])
           parser_mediator.ProduceEvent(
               DockerJSONContainerEvent(
-                  ts, eventdata.EventTimestamp.END_TIME, attr))
+                  timestamp, eventdata.EventTimestamp.END_TIME, attr))
     if u'Created' in j:
-      ts = self._GetDateTimeFromString(j[u'Created'])
+      timestamp = self._GetDateTimeFromString(j[u'Created'])
       attr[u'action'] = u'Container Created'
       parser_mediator.ProduceEvent(
           DockerJSONContainerEvent(
-              ts, eventdata.EventTimestamp.ADDED_TIME, attr)
+              timestamp, eventdata.EventTimestamp.ADDED_TIME, attr)
       )
 
   def _ParseContainerLogJSON(self, parser_mediator, file_object):
@@ -211,7 +209,6 @@ class DockerJSONParser(interface.FileObjectParser):
       parser_mediator: A parser mediator object (instance of ParserMediator).
       file_object: a file entry object (instance of dfvfs.FileIO).
     """
-    ts = None
     path = parser_mediator.GetFileEntry().path_spec.location
     attr = {u'container_id':path.split(u'/')[-2]}
 
@@ -220,8 +217,9 @@ class DockerJSONParser(interface.FileObjectParser):
       if u'log' in json_log_line and u'time' in json_log_line:
         attr[u'log_line'] = json_log_line[u'log']
         attr[u'log_source'] = json_log_line[u'stream']
-        ts = self._GetDateTimeFromString(json_log_line[u'time'])
-        parser_mediator.ProduceEvent(DockerJSONContainerLogEvent(ts, 0, attr))
+        timestamp = self._GetDateTimeFromString(json_log_line[u'time'])
+        parser_mediator.ProduceEvent(
+            DockerJSONContainerLogEvent(timestamp, 0, attr))
 
 
 class DockerJSONBaseEvent(time_events.TimestampEvent):
