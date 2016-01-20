@@ -46,7 +46,7 @@ class DockerJSONParser(interface.FileObjectParser):
     # Trivial JSON format check: first character must be an open brace.
     if file_object.read(1) != b'{':
       raise errors.UnableToParseFile((
-          u'[{0:s}] {1:s} is not a valid Preference file, '
+          u'[{0:s}] {1:s} is not a valid JSON file, '
           u'missing opening brace.').format(
               self.NAME, parser_mediator.GetDisplayName()))
 
