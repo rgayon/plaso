@@ -15,26 +15,32 @@ from plaso.parsers import interface
 
 
 class DockerJSONParser(interface.FileObjectParser):
-  """Will generate various events from Docker json config and log files.
-     This handles :
-     * Per container config file
-       DOCKER_DIR/containers/<container_id>/config.json
-     * Per container stdout/stderr output log
-       DOCKER_DIR/containers/<container_id>/<container_id>-json.log
-     * Filesystem layer config files
-       DOCKER_DIR/graph/<layer_id>/json
+  """Generates various events from Docker json config and log files.
+
+  This handles :
+  * Per container config file
+    DOCKER_DIR/containers/<container_id>/config.json
+  * Per container stdout/stderr output log
+    DOCKER_DIR/containers/<container_id>/<container_id>-json.log
+  * Filesystem layer config files
+    DOCKER_DIR/graph/<layer_id>/json
   """
 
   NAME = u'dockerjson'
   DESCRIPTION = u'Parser for JSON Docker files.'
 
   def ParseFileObject(self, parser_mediator, file_object):
-    """ This methods checks whether the file_object points to a
-        docker JSON config or log file, and calls the corresponding
-        _Parse* function to generate Events.
+    """ Parses various Docker configuration and log files in JSON format.
 
-        Raises:
-          UnableToParseFile: when the file cannot be parsed.
+    This methods checks whether the file_object points to a docker JSON config
+    or log file, and calls the corresponding _Parse* function to generate Events.
+
+    Args:
+      parser_mediator: A parser mediator object (instance of ParserMediator).
+      file_object: a file entry object (instance of dfvfs.FileIO).
+
+    Raises:
+      UnableToParseFile: when the file cannot be parsed.
     """
 
     # Trivial check if we actually have a JSON file
@@ -75,10 +81,16 @@ class DockerJSONParser(interface.FileObjectParser):
         raise
 
   def _GetDateTimeFromString(self, rfc3339_timestamp):
-    """Converts text timestamps from JSON files into Timestamps """
-    # Docker uses Go time lib, and RFC3339 times. This isn't supposed to
-    # happen in stdlib before python 3.6. See http://bugs.python.org/issue15873
-    # This is a cheap hack to reuse existing timelib functions.
+    """Converts text timestamps from JSON files into Timestamps.
+
+    Docker uses Go time library, and RFC3339 times. This isn't supposed to
+    happen in stdlib before python 3.6. See http://bugs.python.org/issue15873
+    This is a cheap hack to reuse existing timelib functions.
+
+    Args:
+      rfc3339_timestamp: A string in RFC3339 format, from a Docker JSON file.
+    """
+
     string_timestamp = rfc3339_timestamp.replace(u'Z', '')
     if len(string_timestamp) >= 26:
       # Slicing to 26 because python doesn't understand nanosec timestamps
@@ -95,9 +107,14 @@ class DockerJSONParser(interface.FileObjectParser):
     return timelib.Timestamp.FromPythonDatetime(parsed_datetime)
 
   def _ParseLayerConfigJSON(self, file_object, parser_mediator):
-    """This handles :
-       * Filesystem layer config files
-         DOCKER_DIR/graph/<layer_id>/json
+    """Extracts events from a Docker filesystem layer configuration file.
+
+    The path of each filesystem layer config file is:
+    DOCKER_DIR/graph/<layer_id>/json
+
+    Args:
+      parser_mediator: A parser mediator object (instance of ParserMediator).
+      file_object: a file entry object (instance of dfvfs.FileIO).
     """
     j = json.load(file_object)
     ts = None
@@ -121,10 +138,12 @@ class DockerJSONParser(interface.FileObjectParser):
           )
 
 
+  def _ParseContainerConfigJSON(self, parser_mediator, file_object):
+    """Extracts events from a Docker container configuration file.
+
+    The path of each container config file is:
+    DOCKER_DIR/containers/<container_id>/config.json
   def _ParseContainerConfigJSON(self, file_object, parser_mediator):
-    """This handles :
-       - Per container config file
-       DOCKER_DIR/containers/<container_id>/config.json
     """
     j = json.load(file_object)
     ts = None
@@ -161,8 +180,10 @@ class DockerJSONParser(interface.FileObjectParser):
       )
 
   def _ParseContainerLogJSON(self, file_object, parser_mediator):
-    """This handles :
-    * Per container stdout/stderr output log
+    """Extract events from a Docker container log files.
+
+    The path of each container log file (which logs the container stdout and
+    stderr) is:
     DOCKER_DIR/containers/<container_id>/<container_id>-json.log
     """
     ts = None
@@ -189,13 +210,13 @@ class DockerJSONBaseEvent(time_events.TimestampEvent):
 
 
 class DockerJSONContainerLogEvent(text_events.TextEvent):
-  """Event parsed from containers' <id>-json.log files."""
+  """Event parsed from a Docker container's log files."""
 
   DATA_TYPE = u'docker:json:container:log'
 
 
 class DockerJSONContainerEvent(DockerJSONBaseEvent):
-  """Event parsed from containers' config.json files."""
+  """Event parsed from a Docker container's configuration file."""
 
   DATA_TYPE = u'docker:json:container'
 
@@ -208,7 +229,7 @@ class DockerJSONContainerEvent(DockerJSONBaseEvent):
 
 
 class DockerJSONLayerEvent(DockerJSONBaseEvent):
-  """ Event for stuff from graph/**/json """
+  """Event parsed from a Docker filesystem layer configuration file """
 
   DATA_TYPE = u'docker:json:layer'
   def __init__(self, timestamp, event_type, attributes):
