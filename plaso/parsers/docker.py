@@ -61,12 +61,12 @@ class DockerJSONParser(interface.FileObjectParser):
     try:
       if json_file_path.find(u'/containers') > 0:
         if json_file_path.find(u'/config.json') > 0:
-          self._ParseContainerConfigJSON(file_object, parser_mediator)
+          self._ParseContainerConfigJSON(parser_mediator, file_object)
         if json_file_path.find(u'-json.log') > 0:
-          self._ParseContainerLogJSON(file_object, parser_mediator)
+          self._ParseContainerLogJSON(parser_mediator, file_object)
       elif json_file_path.find(u'/graph') > 0:
         if json_file_path.find(u'/json') > 0:
-          self._ParseLayerConfigJSON(file_object, parser_mediator)
+          self._ParseLayerConfigJSON(parser_mediator, file_object)
     except ValueError as exception:
       if exception == u'No JSON object could be decoded':
         raise errors.UnableToParseFile((
