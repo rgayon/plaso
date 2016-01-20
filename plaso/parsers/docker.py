@@ -33,7 +33,8 @@ class DockerJSONParser(interface.FileObjectParser):
     """ Parses various Docker configuration and log files in JSON format.
 
     This methods checks whether the file_object points to a docker JSON config
-    or log file, and calls the corresponding _Parse* function to generate Events.
+    or log file, and calls the corresponding _Parse* function to generate
+    Events.
 
     Args:
       parser_mediator: A parser mediator object (instance of ParserMediator).
