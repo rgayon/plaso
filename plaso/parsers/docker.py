@@ -43,8 +43,7 @@ class DockerJSONParser(interface.FileObjectParser):
       UnableToParseFile: when the file cannot be parsed.
     """
 
-    # Trivial check if we actually have a JSON file
-    #   check for initial character being open brace.
+    # Trivial JSON format check: first character must be an open brace.
     if file_object.read(1) != b'{':
       raise errors.UnableToParseFile((
           u'[{0:s}] {1:s} is not a valid Preference file, '
@@ -54,7 +53,7 @@ class DockerJSONParser(interface.FileObjectParser):
     file_object.seek(0, os.SEEK_SET)
 
     file_entry = parser_mediator.GetFileEntry()
-    # We need the path to the file to know what it describes
+
     json_file_path = getattr(file_entry.path_spec, u'location', None)
     if not json_file_path:
       json_file_path = getattr(file_entry.path_spec, u'location', None)
