@@ -262,7 +262,4 @@ class DockerJSONLayerEvent(DockerJSONBaseEvent):
     self.command = attributes[u'command']
     self.layer_id = attributes[u'layer_id']
 
-
-manager.ParsersManager.RegisterParser(
-    DockerJSONParser
-)
+manager.ParsersManager.RegisterParser(DockerJSONParser)
