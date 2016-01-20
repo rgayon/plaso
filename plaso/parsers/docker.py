@@ -118,12 +118,17 @@ class DockerJSONParser(interface.FileObjectParser):
     path = parser_mediator.GetFileEntry().path_spec.location
     attr = {u'layer_id':path.split(u'/')[-2]}
 
-    # Basic checks
     if u'docker_version'  not in j:
-      # Not a docker layer JSON file ?
-      return
+      raise errors.UnableToParseFile((
+          u'[{0:s}] {1:s} is not a valid Docker layer configuration file, '
+          u'missing \'docker_version\' key.').format(
+              self.NAME, parser_mediator.GetDisplayName()))
     if u'id' in j and (j[u'id'] != attr[u'layer_id']):
-      return
+      raise errors.UnableToParseFile((
+          u'[{0:s}] {1:s} is not a valid Docker layer configuration file, '
+          u'missing \'id\' key or \'id\' key != {2:s} '
+          u'(layer ID taken from the path to the JSON file.)').format(
+              self.NAME, parser_mediator.GetDisplayName(), attr[u'layer_id']))
     if u'created' in j:
       ts = self._GetDateTimeFromString(j[u'created'])
       attr[u'command'] = u' '.join(
@@ -133,7 +138,6 @@ class DockerJSONParser(interface.FileObjectParser):
           DockerJSONLayerEvent(
               ts, eventdata.EventTimestamp.ADDED_TIME, attr)
           )
-
 
   def _ParseContainerConfigJSON(self, parser_mediator, file_object):
     """Extracts events from a Docker container configuration file.
@@ -145,11 +149,19 @@ class DockerJSONParser(interface.FileObjectParser):
     ts = None
     path = parser_mediator.GetFileEntry().path_spec.location
     attr = {u'container_id':path.split(u'/')[-2]}
-    # Basic checks
-    if u'Driver' not in j or u'ID' not in j or (
-        j[u'ID'] != attr[u'container_id']):
-      # Not a docker container JSON file
-      return
+
+    if u'Driver' not in j:
+      raise errors.UnableToParseFile((
+          u'[{0:s}] {1:s} is not a valid Docker container configuration file, '
+          u'missing \'Driver\' key.').format(
+              self.NAME, parser_mediator.GetDisplayName()))
+    if u'ID' not in j or (j[u'ID'] != attr[u'container_id']):
+      raise errors.UnableToParseFile((
+          u'[{0:s}] {1:s} is not a valid Docker container configuration file, '
+          u'missing \'ID\' key or \'ID\' key != {2:s} '
+          u'(container ID taken from the path to the JSON file.)').format(
+              self.NAME, parser_mediator.GetDisplayName(),
+              attr[u'container_id']))
     if u'Config' in j and u'Hostname' in j[u'Config']:
       attr[u'container_name'] = j[u'Config'][u'Hostname']
     if u'State' in j:
