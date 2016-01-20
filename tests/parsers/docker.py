@@ -19,8 +19,8 @@ class DockerJSONUnitTest(test_lib.ParserTestCase):
 
   def testParseContainerLog(self):
     """Tests the _ParseContainerLogJSON function."""
-    container_id =
-      u'e7d0b7ea5ccf08366e2b0c8afa2318674e8aefe802315378125d2bb83fe3110c'
+    container_id = (u'e7d0b7ea5ccf08366e2b0c8afa231867'
+                    u'4e8aefe802315378125d2bb83fe3110c')
     test_file = self._GetTestFilePath([u'docker',
                                        u'containers',
                                        container_id,
@@ -69,8 +69,8 @@ class DockerJSONUnitTest(test_lib.ParserTestCase):
 
   def testParseContainerConfig(self):
     """Tests the _ParseContainerConfigJSON function."""
-    container_id =
-      u'e7d0b7ea5ccf08366e2b0c8afa2318674e8aefe802315378125d2bb83fe3110c'
+    container_id = (u'e7d0b7ea5ccf08366e2b0c8afa231867'
+                    u'4e8aefe802315378125d2bb83fe3110c')
     test_file = self._GetTestFilePath([u'docker',
                                        u'containers',
                                        container_id,
@@ -100,13 +100,13 @@ class DockerJSONUnitTest(test_lib.ParserTestCase):
 
   def testParseLayerConfig(self):
     """Tests the _ParseLayerConfigJSON function."""
-    lid = u'3c9a9d7cc6a235eb2de58ca9ef3551c67ae42a991933ba4958d207b29142902b'
+    layer_id = (u'3c9a9d7cc6a235eb2de58ca9ef3551c6'
+                u'7ae42a991933ba4958d207b29142902b')
     test_file = self._GetTestFilePath(['docker',
                                        u'graph',
-                                       lid,
+                                       layer_id,
                                        u'json'])
 
-    print test_file
     event_queue_consumer = self._ParseFile(self._parser, test_file)
     event_objects = self._GetEventObjectsFromQueue(event_queue_consumer)
 
@@ -117,7 +117,7 @@ class DockerJSONUnitTest(test_lib.ParserTestCase):
     expected_cmd = (u'/bin/sh -c sed -i \'s/^#\\s*\\(deb.*universe\\)$/\\1/g\' '
                     u'/etc/apt/sources.list')
     self.assertEqual(event_object.command, expected_cmd)
-    self.assertEqual(event_object.layer_id, lid)
+    self.assertEqual(event_object.layer_id, layer_id)
     self.assertEqual(event_object.timestamp, 1444670823079273)
     self.assertEqual(event_object.timestamp_desc, 'Creation Time')
 
