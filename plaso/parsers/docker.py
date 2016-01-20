@@ -56,11 +56,9 @@ class DockerJSONParser(interface.FileObjectParser):
 
     json_file_path = getattr(file_entry.path_spec, u'location', None)
     if not json_file_path:
-      json_file_path = getattr(file_entry.path_spec, u'location', None)
-      if not json_file_path:
-        raise errors.UnableToParseFile(
-            u'Unable to get location attribute from '
-            u'file_entry.path_spec.')
+      raise errors.UnableToParseFile(
+          u'Unable to get location attribute from '
+          u'file_entry.path_spec.')
     try:
       if json_file_path.find(u'/containers') > 0:
         if json_file_path.find(u'/config.json') > 0:
