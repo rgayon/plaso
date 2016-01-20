@@ -19,10 +19,11 @@ class DockerJSONUnitTest(test_lib.ParserTestCase):
 
   def testParseContainerLog(self):
     """Tests the _ParseContainerLogJSON function."""
-    cid = u'e7d0b7ea5ccf08366e2b0c8afa2318674e8aefe802315378125d2bb83fe3110c'
+    container_id =
+      u'e7d0b7ea5ccf08366e2b0c8afa2318674e8aefe802315378125d2bb83fe3110c'
     test_file = self._GetTestFilePath([u'docker',
                                        u'containers',
-                                       cid,
+                                       container_id,
                                        u'container-json.log'])
 
     event_queue_consumer = self._ParseFile(self._parser, test_file)
@@ -49,7 +50,7 @@ class DockerJSONUnitTest(test_lib.ParserTestCase):
         u'Text: '
         u'\x1b]0;root@e7d0b7ea5ccf: /home/plaso\x07root@e7d0b7ea5ccf:'
         u'/home/plaso# ls, Container ID: %s, '
-        u'Source: stdout'%cid)
+        u'Source: stdout'%container_id)
     expected_msg_short = (
         u'Text: '
         u'\x1b]0;root@e7d0b7ea5ccf: /home/plaso\x07root@e7d0b7ea5ccf:'
@@ -59,7 +60,7 @@ class DockerJSONUnitTest(test_lib.ParserTestCase):
     for index, event_object in enumerate(event_objects):
       self.assertEqual(event_objects[index].timestamp,
                        timelib.Timestamp.CopyFromString(expected_times[index]))
-      self.assertEqual(event_objects[index].container_id, cid)
+      self.assertEqual(event_objects[index].container_id, container_id)
       self.assertEqual(event_objects[index].log_line, expected_log)
       self.assertEqual(event_objects[index].log_source, u'stdout')
       self._TestGetMessageStrings(event_object,
@@ -68,10 +69,11 @@ class DockerJSONUnitTest(test_lib.ParserTestCase):
 
   def testParseContainerConfig(self):
     """Tests the _ParseContainerConfigJSON function."""
-    cid = u'e7d0b7ea5ccf08366e2b0c8afa2318674e8aefe802315378125d2bb83fe3110c'
+    container_id =
+      u'e7d0b7ea5ccf08366e2b0c8afa2318674e8aefe802315378125d2bb83fe3110c'
     test_file = self._GetTestFilePath([u'docker',
                                        u'containers',
-                                       cid,
+                                       container_id,
                                        u'config.json'])
 
     event_queue_consumer = self._ParseFile(self._parser, test_file)
@@ -79,21 +81,21 @@ class DockerJSONUnitTest(test_lib.ParserTestCase):
 
     self.assertEqual(len(event_objects), 2)
 
-    e_o = event_objects[0]
+    event_object = event_objects[0]
     expected_timestamp = timelib.Timestamp.CopyFromString(
         u'2016-01-07 16:49:08.674873')
-    self.assertEqual(e_o.timestamp, expected_timestamp)
-    self.assertEqual(e_o.action, u'Container Started')
-    self.assertEqual(e_o.container_id, cid)
-    self.assertEqual(e_o.container_name, u'e7d0b7ea5ccf')
+    self.assertEqual(event_object.timestamp, expected_timestamp)
+    self.assertEqual(event_object.action, u'Container Started')
+    self.assertEqual(event_object.container_id, container_id)
+    self.assertEqual(event_object.container_name, u'e7d0b7ea5ccf')
 
-    e_o = event_objects[1]
+    event_object = event_objects[1]
     expected_timestamp = timelib.Timestamp.CopyFromString(
         u'2016-01-07 16:49:08.507979')
-    self.assertEqual(e_o.timestamp, expected_timestamp)
-    self.assertEqual(e_o.action, u'Container Created')
-    self.assertEqual(e_o.container_id, cid)
-    self.assertEqual(e_o.container_name, u'e7d0b7ea5ccf')
+    self.assertEqual(event_object.timestamp, expected_timestamp)
+    self.assertEqual(event_object.action, u'Container Created')
+    self.assertEqual(event_object.container_id, container_id)
+    self.assertEqual(event_object.container_name, u'e7d0b7ea5ccf')
 
 
   def testParseLayerConfig(self):
@@ -110,14 +112,14 @@ class DockerJSONUnitTest(test_lib.ParserTestCase):
 
     self.assertEqual(len(event_objects), 1)
 
-    e_o = event_objects[0]
+    event_object = event_objects[0]
 
     expected_cmd = (u'/bin/sh -c sed -i \'s/^#\\s*\\(deb.*universe\\)$/\\1/g\' '
                     u'/etc/apt/sources.list')
-    self.assertEqual(e_o.command, expected_cmd)
-    self.assertEqual(e_o.layer_id, lid)
-    self.assertEqual(e_o.timestamp, 1444670823079273)
-    self.assertEqual(e_o.timestamp_desc, 'Creation Time')
+    self.assertEqual(event_object.command, expected_cmd)
+    self.assertEqual(event_object.layer_id, lid)
+    self.assertEqual(event_object.timestamp, 1444670823079273)
+    self.assertEqual(event_object.timestamp_desc, 'Creation Time')
 
 
 if __name__ == '__main__':
