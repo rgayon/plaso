@@ -106,7 +106,7 @@ class DockerJSONParser(interface.FileObjectParser):
 
     return timelib.Timestamp.FromPythonDatetime(parsed_datetime)
 
-  def _ParseLayerConfigJSON(self, file_object, parser_mediator):
+  def _ParseLayerConfigJSON(self, parser_mediator, file_object):
     """Extracts events from a Docker filesystem layer configuration file.
 
     The path of each filesystem layer config file is:
@@ -143,7 +143,6 @@ class DockerJSONParser(interface.FileObjectParser):
 
     The path of each container config file is:
     DOCKER_DIR/containers/<container_id>/config.json
-  def _ParseContainerConfigJSON(self, file_object, parser_mediator):
     """
     j = json.load(file_object)
     ts = None
@@ -179,7 +178,7 @@ class DockerJSONParser(interface.FileObjectParser):
               ts, eventdata.EventTimestamp.ADDED_TIME, attr)
       )
 
-  def _ParseContainerLogJSON(self, file_object, parser_mediator):
+  def _ParseContainerLogJSON(self, parser_mediator, file_object):
     """Extract events from a Docker container log files.
 
     The path of each container log file (which logs the container stdout and
