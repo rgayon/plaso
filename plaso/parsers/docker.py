@@ -42,7 +42,6 @@ class DockerJSONParser(interface.FileObjectParser):
     Raises:
       UnableToParseFile: when the file cannot be parsed.
     """
-
     # Trivial JSON format check: first character must be an open brace.
     if file_object.read(1) != b'{':
       raise errors.UnableToParseFile((
@@ -87,7 +86,6 @@ class DockerJSONParser(interface.FileObjectParser):
     Args:
       rfc3339_timestamp: A string in RFC3339 format, from a Docker JSON file.
     """
-
     string_timestamp = rfc3339_timestamp.replace(u'Z', '')
     if len(string_timestamp) >= 26:
       # Slicing to 26 because python doesn't understand nanosec timestamps
@@ -125,12 +123,14 @@ class DockerJSONParser(interface.FileObjectParser):
           u'[{0:s}] {1:s} is not a valid Docker layer configuration file, '
           u'missing \'docker_version\' key.').format(
               self.NAME, parser_mediator.GetDisplayName()))
+
     if u'id' in json_dict and (json_dict[u'id'] != attr[u'layer_id']):
       raise errors.UnableToParseFile((
           u'[{0:s}] {1:s} is not a valid Docker layer configuration file, '
           u'missing \'id\' key or \'id\' key != {2:s} '
           u'(layer ID taken from the path to the JSON file.)').format(
               self.NAME, parser_mediator.GetDisplayName(), attr[u'layer_id']))
+
     if u'created' in json_dict:
       timestamp = self._GetDateTimeFromString(json_dict[u'created'])
       attr[u'command'] = u' '.join(
@@ -163,6 +163,7 @@ class DockerJSONParser(interface.FileObjectParser):
           u'[{0:s}] {1:s} is not a valid Docker container configuration file, '
           u'missing \'Driver\' key.').format(
               self.NAME, parser_mediator.GetDisplayName()))
+
     if u'ID' not in json_dict or (json_dict[u'ID'] != attr[u'container_id']):
       raise errors.UnableToParseFile((
           u'[{0:s}] {1:s} is not a valid Docker container configuration file, '
@@ -170,8 +171,10 @@ class DockerJSONParser(interface.FileObjectParser):
           u'(container ID taken from the path to the JSON file.)').format(
               self.NAME, parser_mediator.GetDisplayName(),
               attr[u'container_id']))
+
     if u'Config' in json_dict and u'Hostname' in json_dict[u'Config']:
       attr[u'container_name'] = json_dict[u'Config'][u'Hostname']
+
     if u'State' in json_dict:
       if u'StartedAt' in json_dict[u'State']:
         timestamp = self._GetDateTimeFromString(
@@ -190,6 +193,7 @@ class DockerJSONParser(interface.FileObjectParser):
           parser_mediator.ProduceEvent(
               DockerJSONContainerEvent(
                   timestamp, eventdata.EventTimestamp.END_TIME, attr))
+
     if u'Created' in json_dict:
       timestamp = self._GetDateTimeFromString(json_dict[u'Created'])
       attr[u'action'] = u'Container Created'
@@ -256,6 +260,7 @@ class DockerJSONLayerEvent(DockerJSONBaseEvent):
   """Event parsed from a Docker filesystem layer configuration file """
 
   DATA_TYPE = u'docker:json:layer'
+
   def __init__(self, timestamp, event_type, attributes):
     super(DockerJSONLayerEvent, self).__init__(timestamp,
                                                event_type)
