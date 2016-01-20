@@ -112,6 +112,9 @@ class DockerJSONParser(interface.FileObjectParser):
     Args:
       parser_mediator: A parser mediator object (instance of ParserMediator).
       file_object: a file entry object (instance of dfvfs.FileIO).
+
+    Raises:
+      UnableToParseFile: when the file is not a valid layer config file.
     """
     j = json.load(file_object)
     ts = None
@@ -144,6 +147,13 @@ class DockerJSONParser(interface.FileObjectParser):
 
     The path of each container config file is:
     DOCKER_DIR/containers/<container_id>/config.json
+
+    Args:
+      parser_mediator: A parser mediator object (instance of ParserMediator).
+      file_object: a file entry object (instance of dfvfs.FileIO).
+
+    Raises:
+      UnableToParseFile: when the file is not a valid container config file.
     """
     j = json.load(file_object)
     ts = None
@@ -190,16 +200,21 @@ class DockerJSONParser(interface.FileObjectParser):
   def _ParseContainerLogJSON(self, parser_mediator, file_object):
     """Extract events from a Docker container log files.
 
+    The format is one JSON formatted log message per line.
+
     The path of each container log file (which logs the container stdout and
     stderr) is:
     DOCKER_DIR/containers/<container_id>/<container_id>-json.log
+
+    Args:
+      parser_mediator: A parser mediator object (instance of ParserMediator).
+      file_object: a file entry object (instance of dfvfs.FileIO).
     """
     ts = None
     path = parser_mediator.GetFileEntry().path_spec.location
     attr = {u'container_id':path.split(u'/')[-2]}
 
     for log_line in file_object.read().splitlines():
-      # The format is 1 JSON formatted log message per line
       json_log_line = json.loads(log_line)
       if u'log' in json_log_line and u'time' in json_log_line:
         attr[u'log_line'] = json_log_line[u'log']
