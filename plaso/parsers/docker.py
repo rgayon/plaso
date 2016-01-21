@@ -37,7 +37,7 @@ class DockerJSONParser(interface.FileObjectParser):
     Events.
 
     Args:
-      parser_mediator: A parser mediator object (instance of ParserMediator).
+      parser_mediator: a parser mediator object (instance of ParserMediator).
       file_object: a file entry object (instance of dfvfs.FileIO).
 
     Raises:
@@ -109,7 +109,7 @@ class DockerJSONParser(interface.FileObjectParser):
     DOCKER_DIR/graph/<layer_id>/json
 
     Args:
-      parser_mediator: A parser mediator object (instance of ParserMediator).
+      parser_mediator: a parser mediator object (instance of ParserMediator).
       file_object: a file entry object (instance of dfvfs.FileIO).
 
     Raises:
@@ -149,7 +149,7 @@ class DockerJSONParser(interface.FileObjectParser):
     DOCKER_DIR/containers/<container_id>/config.json
 
     Args:
-      parser_mediator: A parser mediator object (instance of ParserMediator).
+      parser_mediator: a parser mediator object (instance of ParserMediator).
       file_object: a file entry object (instance of dfvfs.FileIO).
 
     Raises:
