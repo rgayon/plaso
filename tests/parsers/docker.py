@@ -97,7 +97,6 @@ class DockerJSONUnitTest(test_lib.ParserTestCase):
     self.assertEqual(event_object.container_id, container_id)
     self.assertEqual(event_object.container_name, u'e7d0b7ea5ccf')
 
-
   def testParseLayerConfig(self):
     """Tests the _ParseLayerConfigJSON function."""
     layer_id = (u'3c9a9d7cc6a235eb2de58ca9ef3551c6'
@@ -114,9 +113,10 @@ class DockerJSONUnitTest(test_lib.ParserTestCase):
 
     event_object = event_objects[0]
 
-    expected_cmd = (u'/bin/sh -c sed -i \'s/^#\\s*\\(deb.*universe\\)$/\\1/g\' '
-                    u'/etc/apt/sources.list')
-    self.assertEqual(event_object.command, expected_cmd)
+    expected_command = (
+        u'/bin/sh -c sed -i \'s/^#\\s*\\(deb.*universe\\)$/\\1/g\' '
+        u'/etc/apt/sources.list')
+    self.assertEqual(event_object.command, expected_command)
     self.assertEqual(event_object.layer_id, layer_id)
     self.assertEqual(event_object.timestamp, 1444670823079273)
     self.assertEqual(event_object.timestamp_desc, 'Creation Time')
