@@ -220,7 +220,7 @@ class DockerJSONParser(interface.FileObjectParser):
     DOCKER_DIR/containers/<container_id>/<container_id>-json.log
 
     Args:
-      parser_mediator: A parser mediator object (instance of ParserMediator).
+      parser_mediator: a parser mediator object (instance of ParserMediator).
       file_object: a file entry object (instance of dfvfs.FileIO).
     """
     path = parser_mediator.GetFileEntry().path_spec.location
