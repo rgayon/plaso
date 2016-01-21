@@ -5,6 +5,8 @@ from datetime import datetime
 import json
 import os
 
+from dfvfs.helpers import text_file
+
 from plaso.events import time_events
 from plaso.events import text_events
 from plaso.lib import errors
@@ -226,7 +228,9 @@ class DockerJSONParser(interface.FileObjectParser):
     path = parser_mediator.GetFileEntry().path_spec.location
     event_attributes = {u'container_id':path.split(u'/')[-2]}
 
-    for log_line in file_object.read().splitlines():
+    text_file_object = text_file.TextFile(file_object)
+
+    for log_line in text_file_object:
       json_log_line = json.loads(log_line)
       if u'log' in json_log_line and u'time' in json_log_line:
         event_attributes[u'log_line'] = json_log_line[u'log']
