@@ -21,9 +21,11 @@ class DockerContainerLogEventFormatter(interface.ConditionalEventFormatter):
 
   DATA_TYPE = u'docker:json:container:log'
 
+  FORMAT_STRING_SEPARATOR = u', '
+
   FORMAT_STRING_PIECES = (
-      u'Text: {log_line},',
-      u'Container ID: {container_id},',
+      u'Text: {log_line}',
+      u'Container ID: {container_id}',
       u'Source: {log_source}',
   )
 
@@ -37,9 +39,11 @@ class DockerLayerEventFormatter(
 
   DATA_TYPE = u'docker:json:layer'
 
+  FORMAT_STRING_SEPARATOR = u', '
+
   FORMAT_STRING_PIECES = (
-      u'Command: {command},',
-      u'Layer ID: {layer_id},',
+      u'Command: {command}',
+      u'Layer ID: {layer_id}',
   )
 
   SOURCE_LONG = u'Docker Layer'
@@ -52,10 +56,12 @@ class DockerContainerEventFormatter(
 
   DATA_TYPE = u'docker:json:container'
 
+  FORMAT_STRING_SEPARATOR = u', '
+
   FORMAT_STRING_PIECES = [
-      u'Action: {action},',
-      u'Container Name: {container_name},',
-      u'Container ID: {container_id},',
+      u'Action: {action}',
+      u'Container Name: {container_name}',
+      u'Container ID: {container_id}',
   ]
 
   SOURCE_LONG = u'Docker Container'
