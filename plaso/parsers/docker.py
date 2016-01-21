@@ -180,6 +180,8 @@ class DockerJSONParser(interface.FileObjectParser):
 
     if u'Config' in json_dict and u'Hostname' in json_dict[u'Config']:
       event_attributes[u'container_name'] = json_dict[u'Config'][u'Hostname']
+    else:
+      event_attributes[u'container_name'] = u'Unknown container name'
 
     if u'State' in json_dict:
       if u'StartedAt' in json_dict[u'State']:
