@@ -30,7 +30,7 @@ class DockerJSONParser(interface.FileObjectParser):
   DESCRIPTION = u'Parser for JSON Docker files.'
 
   def ParseFileObject(self, parser_mediator, file_object):
-    """ Parses various Docker configuration and log files in JSON format.
+    """Parses various Docker configuration and log files in JSON format.
 
     This methods checks whether the file_object points to a docker JSON config
     or log file, and calls the corresponding _Parse* function to generate
