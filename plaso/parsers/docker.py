@@ -249,7 +249,13 @@ class DockerJSONContainerLogEvent(text_events.TextEvent):
 
 
 class DockerJSONContainerEvent(DockerJSONBaseEvent):
-  """Event parsed from a Docker container's configuration file."""
+  """Event parsed from a Docker container's configuration file.
+
+  Attributes:
+    container_id: the identifier of the current container (sha256).
+    container_name: the name of the current container.
+    action: whether the container was created, started, or finished.
+  """
 
   DATA_TYPE = u'docker:json:container'
 
@@ -262,7 +268,12 @@ class DockerJSONContainerEvent(DockerJSONBaseEvent):
 
 
 class DockerJSONLayerEvent(DockerJSONBaseEvent):
-  """Event parsed from a Docker filesystem layer configuration file """
+  """Event parsed from a Docker filesystem layer configuration file
+
+  Attributes:
+    command: the command used which made Docker create a new layer
+    layer_id: the identifier of the current Docker layer (sha1)
+  """
 
   DATA_TYPE = u'docker:json:layer'
 
