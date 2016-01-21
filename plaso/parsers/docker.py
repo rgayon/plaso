@@ -117,7 +117,7 @@ class DockerJSONParser(interface.FileObjectParser):
     """
     json_dict = json.load(file_object)
     path = parser_mediator.GetFileEntry().path_spec.location
-    attr = {u'layer_id':path.split(u'/')[-2]}
+    event_attributes = {u'layer_id':path.split(u'/')[-2]}
 
     if u'docker_version'  not in json_dict:
       raise errors.UnableToParseFile((
@@ -125,21 +125,24 @@ class DockerJSONParser(interface.FileObjectParser):
           u'missing \'docker_version\' key.').format(
               self.NAME, parser_mediator.GetDisplayName()))
 
-    if u'id' in json_dict and (json_dict[u'id'] != attr[u'layer_id']):
+    if u'id' in json_dict and (
+        json_dict[u'id'] != event_attributes[u'layer_id']):
       raise errors.UnableToParseFile((
           u'[{0:s}] {1:s} is not a valid Docker layer configuration file, '
           u'missing \'id\' key or \'id\' key != {2:s} '
           u'(layer ID taken from the path to the JSON file.)').format(
-              self.NAME, parser_mediator.GetDisplayName(), attr[u'layer_id']))
+              self.NAME,
+              parser_mediator.GetDisplayName(),
+              event_attributes[u'layer_id']))
 
     if u'created' in json_dict:
       timestamp = self._GetDateTimeFromString(json_dict[u'created'])
-      attr[u'command'] = u' '.join(
+      event_attributes[u'command'] = u' '.join(
           [x.strip() for x in json_dict[u'container_config'][u'Cmd']]
           ).replace(u'\t', '')
       parser_mediator.ProduceEvent(
           DockerJSONLayerEvent(
-              timestamp, eventdata.EventTimestamp.ADDED_TIME, attr)
+              timestamp, eventdata.EventTimestamp.ADDED_TIME, event_attributes)
           )
 
   def _ParseContainerConfigJSON(self, parser_mediator, file_object):
@@ -157,7 +160,8 @@ class DockerJSONParser(interface.FileObjectParser):
     """
     json_dict = json.load(file_object)
     path = parser_mediator.GetFileEntry().path_spec.location
-    attr = {u'container_id':path.split(u'/')[-2]}
+    container_id = path.split(u'/')[-2]
+    event_attributes = {u'container_id':container_id}
 
     if u'Driver' not in json_dict:
       raise errors.UnableToParseFile((
@@ -165,42 +169,45 @@ class DockerJSONParser(interface.FileObjectParser):
           u'missing \'Driver\' key.').format(
               self.NAME, parser_mediator.GetDisplayName()))
 
-    if u'ID' not in json_dict or (json_dict[u'ID'] != attr[u'container_id']):
+    if u'ID' not in json_dict or (json_dict[u'ID'] != container_id):
       raise errors.UnableToParseFile((
           u'[{0:s}] {1:s} is not a valid Docker container configuration file, '
           u'missing \'ID\' key or \'ID\' key != {2:s} '
           u'(container ID taken from the path to the JSON file.)').format(
-              self.NAME, parser_mediator.GetDisplayName(),
-              attr[u'container_id']))
+              self.NAME, parser_mediator.GetDisplayName(), container_id))
 
     if u'Config' in json_dict and u'Hostname' in json_dict[u'Config']:
-      attr[u'container_name'] = json_dict[u'Config'][u'Hostname']
+      event_attributes[u'container_name'] = json_dict[u'Config'][u'Hostname']
 
     if u'State' in json_dict:
       if u'StartedAt' in json_dict[u'State']:
         timestamp = self._GetDateTimeFromString(
             json_dict[u'State'][u'StartedAt'])
-        attr[u'action'] = u'Container Started'
+        event_attributes[u'action'] = u'Container Started'
         parser_mediator.ProduceEvent(
             DockerJSONContainerEvent(
-                timestamp, eventdata.EventTimestamp.START_TIME, attr))
+                timestamp,
+                eventdata.EventTimestamp.START_TIME, event_attributes))
       if u'FinishedAt' in json_dict['State']:
         if json_dict['State']['FinishedAt'] != u'0001-01-01T00:00:00Z':
           # If the timestamp is 0001-01-01T00:00:00Z, the container
           # is still running, so we don't generate a Finished event
-          attr['action'] = u'Container Finished'
+          event_attributes['action'] = u'Container Finished'
           timestamp = self._GetDateTimeFromString(
               json_dict['State']['FinishedAt'])
           parser_mediator.ProduceEvent(
               DockerJSONContainerEvent(
-                  timestamp, eventdata.EventTimestamp.END_TIME, attr))
+                  timestamp,
+                  eventdata.EventTimestamp.END_TIME,
+                  event_attributes))
 
-    if u'Created' in json_dict:
-      timestamp = self._GetDateTimeFromString(json_dict[u'Created'])
-      attr[u'action'] = u'Container Created'
+    created_time = json_dict.get(u'Created', None)
+    if created_time:
+      timestamp = self._GetDateTimeFromString(created_time)
+      event_attributes[u'action'] = u'Container Created'
       parser_mediator.ProduceEvent(
           DockerJSONContainerEvent(
-              timestamp, eventdata.EventTimestamp.ADDED_TIME, attr)
+              timestamp, eventdata.EventTimestamp.ADDED_TIME, event_attributes)
       )
 
   def _ParseContainerLogJSON(self, parser_mediator, file_object):
@@ -217,16 +224,16 @@ class DockerJSONParser(interface.FileObjectParser):
       file_object: a file entry object (instance of dfvfs.FileIO).
     """
     path = parser_mediator.GetFileEntry().path_spec.location
-    attr = {u'container_id':path.split(u'/')[-2]}
+    event_attributes = {u'container_id':path.split(u'/')[-2]}
 
     for log_line in file_object.read().splitlines():
       json_log_line = json.loads(log_line)
       if u'log' in json_log_line and u'time' in json_log_line:
-        attr[u'log_line'] = json_log_line[u'log']
-        attr[u'log_source'] = json_log_line[u'stream']
+        event_attributes[u'log_line'] = json_log_line[u'log']
+        event_attributes[u'log_source'] = json_log_line[u'stream']
         timestamp = self._GetDateTimeFromString(json_log_line[u'time'])
         parser_mediator.ProduceEvent(
-            DockerJSONContainerLogEvent(timestamp, 0, attr))
+            DockerJSONContainerLogEvent(timestamp, 0, event_attributes))
 
 
 class DockerJSONBaseEvent(time_events.TimestampEvent):
