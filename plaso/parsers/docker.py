@@ -234,9 +234,6 @@ class DockerJSONBaseEvent(time_events.TimestampEvent):
 
   DATA_TYPE = u'docker:json'
 
-  def __init__(self, timestamp, event_type):
-    super(DockerJSONBaseEvent, self).__init__(timestamp, event_type)
-
 
 class DockerJSONContainerLogEvent(text_events.TextEvent):
   """Event parsed from a Docker container's log files."""
