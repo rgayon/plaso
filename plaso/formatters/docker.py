@@ -17,7 +17,7 @@ class DockerBaseEventFormatter(interface.ConditionalEventFormatter):
 
 
 class DockerContainerLogEventFormatter(interface.ConditionalEventFormatter):
-  """Formatter for a Docker container Log Event"""
+  """Formatter for a Docker container log event"""
 
   DATA_TYPE = u'docker:json:container:log'
 
@@ -33,7 +33,7 @@ class DockerContainerLogEventFormatter(interface.ConditionalEventFormatter):
 
 class DockerLayerEventFormatter(
     interface.ConditionalEventFormatter):
-  """Formatter for a Docker Layer event."""
+  """Formatter for a Docker layer event."""
 
   DATA_TYPE = u'docker:json:layer'
 
