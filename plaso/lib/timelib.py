@@ -840,11 +840,11 @@ class Timestamp(object):
 
   @classmethod
   def FromRFC3339(cls, rfc3339_timestamp):
-    """Converts text timestamps from JSON files into Timestamps.
+    """Converts a text RFC3339 timestamp into a Timestamp object.
 
-    Docker uses Go time library, and RFC3339 times. This isn't supposed to
-    happen in stdlib before python 3.6. See http://bugs.python.org/issue15873
-    This is a cheap hack to reuse existing timelib functions.
+    This implementation is very 'hack-y' and will be obsoleted when Python 
+    implements the format (not before Python 3.6, see
+    http://bugs.python.org/issue15873 )
 
     Args:
       rfc3339_timestamp: A string in RFC3339 format, from a Docker JSON file.
