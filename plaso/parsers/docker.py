@@ -118,8 +118,10 @@ class DockerJSONParser(interface.FileObjectParser):
       UnableToParseFile: when the file is not a valid layer config file.
     """
     json_dict = json.load(file_object)
-    path = parser_mediator.GetFileEntry().path_spec.location
-    event_attributes = {u'layer_id':path.split(u'/')[-2]}
+    file_entry = parser_mediator.GetFileEntry()
+    path = file_entry.path_spec.location
+    file_system = file_entry.GetFileSystem()
+    event_attributes = {u'layer_id':file_system.SplitPath(path)[-2]}
 
     if u'docker_version'  not in json_dict:
       raise errors.UnableToParseFile((
@@ -161,8 +163,10 @@ class DockerJSONParser(interface.FileObjectParser):
       UnableToParseFile: when the file is not a valid container config file.
     """
     json_dict = json.load(file_object)
-    path = parser_mediator.GetFileEntry().path_spec.location
-    container_id = path.split(u'/')[-2]
+    file_entry = parser_mediator.GetFileEntry()
+    path = file_entry.path_spec.location
+    file_system = file_entry.GetFileSystem()
+    container_id = file_system.SplitPath(path)[-2]
     event_attributes = {u'container_id':container_id}
 
     if u'Driver' not in json_dict:
@@ -227,8 +231,10 @@ class DockerJSONParser(interface.FileObjectParser):
       parser_mediator: a parser mediator object (instance of ParserMediator).
       file_object: a file entry object (instance of dfvfs.FileIO).
     """
-    path = parser_mediator.GetFileEntry().path_spec.location
-    event_attributes = {u'container_id':path.split(u'/')[-2]}
+    file_entry = parser_mediator.GetFileEntry()
+    path = file_entry.path_spec.location
+    file_system = file_entry.GetFileSystem()
+    event_attributes = {u'container_id':file_system.SplitPath(path)[-2]}
 
     text_file_object = text_file.TextFile(file_object)
 
