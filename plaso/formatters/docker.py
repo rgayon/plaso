@@ -33,8 +33,7 @@ class DockerContainerLogEventFormatter(interface.ConditionalEventFormatter):
   SOURCE_SHORT = u'DOCKER'
 
 
-class DockerLayerEventFormatter(
-    interface.ConditionalEventFormatter):
+class DockerLayerEventFormatter(interface.ConditionalEventFormatter):
   """Formatter for a Docker layer event."""
 
   DATA_TYPE = u'docker:json:layer'
@@ -50,8 +49,7 @@ class DockerLayerEventFormatter(
   SOURCE_SHORT = u'DOCKER'
 
 
-class DockerContainerEventFormatter(
-    interface.ConditionalEventFormatter):
+class DockerContainerEventFormatter(interface.ConditionalEventFormatter):
   """Formatter for a Docker event."""
 
   DATA_TYPE = u'docker:json:container'
