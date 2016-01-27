@@ -229,8 +229,8 @@ class DockerJSONContainerEvent(DockerJSONBaseEvent):
 
   Attributes:
     action: whether the container was created, started, or finished.
-    container_id: the identifier of the current container (sha256).
-    container_name: the name of the current container.
+    container_id: the identifier of the container (sha256).
+    container_name: the name of the container.
   """
 
   DATA_TYPE = u'docker:json:container'
