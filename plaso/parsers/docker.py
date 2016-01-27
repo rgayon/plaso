@@ -254,8 +254,8 @@ class DockerJSONLayerEvent(DockerJSONBaseEvent):
   DATA_TYPE = u'docker:json:layer'
 
   def __init__(self, timestamp, event_type, attributes):
-    super(DockerJSONLayerEvent, self).__init__(timestamp,
-                                               event_type)
+    super(DockerJSONLayerEvent, self).__init__(
+        timestamp, event_type)
     self.command = attributes[u'command']
     self.layer_id = attributes[u'layer_id']
 
