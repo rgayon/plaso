@@ -53,19 +53,22 @@ class DockerJSONParser(interface.FileObjectParser):
 
     file_entry = parser_mediator.GetFileEntry()
 
+    file_system = file_entry.GetFileSystem()
+
     json_file_path = getattr(file_entry.path_spec, u'location', None)
     if not json_file_path:
       raise errors.UnableToParseFile(
           u'Unable to get location attribute from '
           u'file_entry.path_spec.')
+    splited_path = file_system.SplitPath(json_file_path)
     try:
-      if json_file_path.find(u'/containers') > 0:
-        if json_file_path.find(u'/config.json') > 0:
+      if u'containers' in splited_path:
+        if u'config.json' in splited_path:
           self._ParseContainerConfigJSON(parser_mediator, file_object)
-        if json_file_path.find(u'-json.log') > 0:
+        if json_file_path.endswith(u'-json.log'):
           self._ParseContainerLogJSON(parser_mediator, file_object)
-      elif json_file_path.find(u'/graph') > 0:
-        if json_file_path.find(u'/json') > 0:
+      elif u'graph' in splited_path:
+        if u'json' in splited_path > 0:
           self._ParseLayerConfigJSON(parser_mediator, file_object)
     except ValueError as exception:
       if exception == u'No JSON object could be decoded':
