@@ -67,7 +67,6 @@ class DockerContainerEventFormatter(interface.ConditionalEventFormatter):
 
 
 manager.FormattersManager.RegisterFormatters([
-    DockerBaseEventFormatter,
     DockerContainerEventFormatter,
     DockerContainerLogEventFormatter,
     DockerLayerEventFormatter,
