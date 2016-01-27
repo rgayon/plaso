@@ -39,7 +39,7 @@ class DockerJSONParser(interface.FileObjectParser):
 
     Args:
       parser_mediator: a parser mediator object (instance of ParserMediator).
-      file_object: a file entry object (instance of dfvfs.FileIO).
+      file_object: a file-like object.
 
     Raises:
       UnableToParseFile: when the file cannot be parsed.
@@ -84,7 +84,7 @@ class DockerJSONParser(interface.FileObjectParser):
 
     Args:
       parser_mediator: a parser mediator object (instance of ParserMediator).
-      file_object: a file entry object (instance of dfvfs.FileIO).
+      file_object: a file-like object.
 
     Raises:
       UnableToParseFile: when the file is not a valid layer config file.
@@ -125,7 +125,7 @@ class DockerJSONParser(interface.FileObjectParser):
 
     Args:
       parser_mediator: a parser mediator object (instance of ParserMediator).
-      file_object: a file entry object (instance of dfvfs.FileIO).
+      file_object: a file-like object.
 
     Raises:
       UnableToParseFile: when the file is not a valid container config file.
@@ -195,7 +195,7 @@ class DockerJSONParser(interface.FileObjectParser):
 
     Args:
       parser_mediator: a parser mediator object (instance of ParserMediator).
-      file_object: a file entry object (instance of dfvfs.FileIO).
+      file_object: a file-like object.
     """
     file_entry = parser_mediator.GetFileEntry()
     path = file_entry.path_spec.location
