@@ -93,7 +93,7 @@ class DockerJSONParser(interface.FileObjectParser):
     file_entry = parser_mediator.GetFileEntry()
     path = file_entry.path_spec.location
     file_system = file_entry.GetFileSystem()
-    event_attributes = {u'layer_id':file_system.SplitPath(path)[-2]}
+    event_attributes = {u'layer_id': file_system.SplitPath(path)[-2]}
 
     if u'docker_version'  not in json_dict:
       raise errors.UnableToParseFile(
@@ -135,7 +135,7 @@ class DockerJSONParser(interface.FileObjectParser):
     path = file_entry.path_spec.location
     file_system = file_entry.GetFileSystem()
     container_id = file_system.SplitPath(path)[-2]
-    event_attributes = {u'container_id':container_id}
+    event_attributes = {u'container_id': container_id}
 
     if u'Driver' not in json_dict:
       raise errors.UnableToParseFile(
@@ -200,7 +200,7 @@ class DockerJSONParser(interface.FileObjectParser):
     file_entry = parser_mediator.GetFileEntry()
     path = file_entry.path_spec.location
     file_system = file_entry.GetFileSystem()
-    event_attributes = {u'container_id':file_system.SplitPath(path)[-2]}
+    event_attributes = {u'container_id': file_system.SplitPath(path)[-2]}
 
     text_file_object = text_file.TextFile(file_object)
 
