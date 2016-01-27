@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Parser for Docker configuration and log files."""
 
-import datetime
 import json
 import os
 
@@ -74,31 +73,6 @@ class DockerJSONParser(interface.FileObjectParser):
       else:
         raise
 
-  def _GetDateTimeFromString(self, rfc3339_timestamp):
-    """Converts text timestamps from JSON files into Timestamps.
-
-    Docker uses Go time library, and RFC3339 times. This isn't supposed to
-    happen in stdlib before python 3.6. See http://bugs.python.org/issue15873
-    This is a cheap hack to reuse existing timelib functions.
-
-    Args:
-      rfc3339_timestamp: A string in RFC3339 format, from a Docker JSON file.
-    """
-    string_timestamp = rfc3339_timestamp.replace(u'Z', '')
-    if len(string_timestamp) >= 26:
-      # Slicing to 26 because python doesn't understand nanosec timestamps
-      parsed_datetime = datetime.datetime.strptime(string_timestamp[:26],
-                                          u'%Y-%m-%dT%H:%M:%S.%f')
-    else:
-      try:
-        parsed_datetime = datetime.datetime.strptime(string_timestamp,
-                                            u'%Y-%m-%dT%H:%M:%S.%f')
-      except ValueError:
-        parsed_datetime = datetime.datetime.strptime(string_timestamp,
-                                            u'%Y-%m-%dT%H:%M:%S')
-
-    return timelib.Timestamp.FromPythonDatetime(parsed_datetime)
-
   def _ParseLayerConfigJSON(self, parser_mediator, file_object):
     """Extracts events from a Docker filesystem layer configuration file.
 
@@ -131,7 +105,7 @@ class DockerJSONParser(interface.FileObjectParser):
           u'JSON file.)')
 
     if u'created' in json_dict:
-      timestamp = self._GetDateTimeFromString(json_dict[u'created'])
+      timestamp = timelib.Timestamp.FromRFC3339(json_dict[u'created'])
       event_attributes[u'command'] = u' '.join(
           [x.strip() for x in json_dict[u'container_config'][u'Cmd']]
           ).replace(u'\t', '')
@@ -178,7 +152,7 @@ class DockerJSONParser(interface.FileObjectParser):
 
     if u'State' in json_dict:
       if u'StartedAt' in json_dict[u'State']:
-        timestamp = self._GetDateTimeFromString(
+        timestamp = timelib.Timestamp.FromRFC3339(
             json_dict[u'State'][u'StartedAt'])
         event_attributes[u'action'] = u'Container Started'
         parser_mediator.ProduceEvent(
@@ -190,7 +164,7 @@ class DockerJSONParser(interface.FileObjectParser):
           # If the timestamp is 0001-01-01T00:00:00Z, the container
           # is still running, so we don't generate a Finished event
           event_attributes['action'] = u'Container Finished'
-          timestamp = self._GetDateTimeFromString(
+          timestamp = timelib.Timestamp.FromRFC3339(
               json_dict['State']['FinishedAt'])
           parser_mediator.ProduceEvent(
               DockerJSONContainerEvent(
@@ -200,7 +174,7 @@ class DockerJSONParser(interface.FileObjectParser):
 
     created_time = json_dict.get(u'Created', None)
     if created_time:
-      timestamp = self._GetDateTimeFromString(created_time)
+      timestamp = timelib.Timestamp.FromRFC3339(created_time)
       event_attributes[u'action'] = u'Container Created'
       parser_mediator.ProduceEvent(
           DockerJSONContainerEvent(
@@ -232,7 +206,7 @@ class DockerJSONParser(interface.FileObjectParser):
       if u'log' in json_log_line and u'time' in json_log_line:
         event_attributes[u'log_line'] = json_log_line[u'log']
         event_attributes[u'log_source'] = json_log_line[u'stream']
-        timestamp = self._GetDateTimeFromString(json_log_line[u'time'])
+        timestamp = timelib.Timestamp.FromRFC3339(json_log_line[u'time'])
         parser_mediator.ProduceEvent(
             DockerJSONContainerLogEvent(timestamp, 0, event_attributes))
 
