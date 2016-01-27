@@ -109,9 +109,13 @@ class DockerJSONParser(interface.FileObjectParser):
 
     if u'created' in json_dict:
       timestamp = timelib.Timestamp.FromRFC3339(json_dict[u'created'])
-      event_attributes[u'command'] = u' '.join(
-          [x.strip() for x in json_dict[u'container_config'][u'Cmd']]
-          ).replace(u'\t', '')
+      layer_creation_command_array = [x.strip()
+                                for x in json_dict[u'container_config'][u'Cmd']]
+      layer_creation_command =  u' '.join(layer_creation_command).replace(
+          u'\t', '')
+
+      event_attributes[u'command'] = layer_creation_command
+
       parser_mediator.ProduceEvent(
           DockerJSONLayerEvent(
               timestamp, eventdata.EventTimestamp.ADDED_TIME, event_attributes)
