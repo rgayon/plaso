@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Parser for Docker configuration and log files."""
 
-from datetime import datetime
+import datetime
 import json
 import os
 
@@ -92,14 +92,14 @@ class DockerJSONParser(interface.FileObjectParser):
     string_timestamp = rfc3339_timestamp.replace(u'Z', '')
     if len(string_timestamp) >= 26:
       # Slicing to 26 because python doesn't understand nanosec timestamps
-      parsed_datetime = datetime.strptime(string_timestamp[:26],
+      parsed_datetime = datetime.datetime.strptime(string_timestamp[:26],
                                           u'%Y-%m-%dT%H:%M:%S.%f')
     else:
       try:
-        parsed_datetime = datetime.strptime(string_timestamp,
+        parsed_datetime = datetime.datetime.strptime(string_timestamp,
                                             u'%Y-%m-%dT%H:%M:%S.%f')
       except ValueError:
-        parsed_datetime = datetime.strptime(string_timestamp,
+        parsed_datetime = datetime.datetime.strptime(string_timestamp,
                                             u'%Y-%m-%dT%H:%M:%S')
 
     return timelib.Timestamp.FromPythonDatetime(parsed_datetime)
