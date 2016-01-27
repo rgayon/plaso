@@ -144,7 +144,7 @@ class DockerJSONParser(interface.FileObjectParser):
 
     if u'ID' not in json_dict or (json_dict[u'ID'] != container_id):
       raise errors.UnableToParseFile((
-          u'not a valid Docker container configuration file, ' missing \'ID\' '
+          u'not a valid Docker container configuration file, missing \'ID\' '
           u'key or \'ID\' key != {0:s} (container ID taken from the path to '
           u'the JSON file.)').format(container_id))
 
