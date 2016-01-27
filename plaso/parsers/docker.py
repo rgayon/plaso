@@ -76,6 +76,13 @@ class DockerJSONParser(interface.FileObjectParser):
       else:
         raise
 
+  def _GetIDFromPath(self, parser_mediator):
+    file_entry = parser_mediator.GetFileEntry()
+    path = file_entry.path_spec.location
+    file_system = file_entry.GetFileSystem()
+    _id = file_system.SplitPath(path)[-2]
+    return _id
+
   def _ParseLayerConfigJSON(self, parser_mediator, file_object):
     """Extracts events from a Docker filesystem layer configuration file.
 
@@ -90,10 +97,8 @@ class DockerJSONParser(interface.FileObjectParser):
       UnableToParseFile: when the file is not a valid layer config file.
     """
     json_dict = json.load(file_object)
-    file_entry = parser_mediator.GetFileEntry()
-    path = file_entry.path_spec.location
-    file_system = file_entry.GetFileSystem()
-    event_attributes = {u'layer_id': file_system.SplitPath(path)[-2]}
+    layer_id = self._GetIDFromPath(parser_mediator)
+    event_attributes = {u'layer_id': layer_id}
 
     if u'docker_version'  not in json_dict:
       raise errors.UnableToParseFile(
@@ -135,10 +140,7 @@ class DockerJSONParser(interface.FileObjectParser):
       UnableToParseFile: when the file is not a valid container config file.
     """
     json_dict = json.load(file_object)
-    file_entry = parser_mediator.GetFileEntry()
-    path = file_entry.path_spec.location
-    file_system = file_entry.GetFileSystem()
-    container_id = file_system.SplitPath(path)[-2]
+    container_id = self._GetIDFromPath(parser_mediator)
     event_attributes = {u'container_id': container_id}
 
     if u'Driver' not in json_dict:
@@ -196,10 +198,7 @@ class DockerJSONParser(interface.FileObjectParser):
       parser_mediator: a parser mediator object (instance of ParserMediator).
       file_object: a file-like object.
     """
-    file_entry = parser_mediator.GetFileEntry()
-    path = file_entry.path_spec.location
-    file_system = file_entry.GetFileSystem()
-    event_attributes = {u'container_id': file_system.SplitPath(path)[-2]}
+    event_attributes = {u'container_id': self._GetIDFromPath(parser_mediator)}
 
     text_file_object = text_file.TextFile(file_object)
 
