@@ -842,7 +842,7 @@ class Timestamp(object):
   def FromRFC3339(cls, rfc3339_timestamp):
     """Converts a text RFC3339 timestamp into a Timestamp object.
 
-    This implementation is very 'hack-y' and will be obsoleted when Python 
+    This implementation is very 'hack-y' and will be obsoleted when Python
     implements the format (not before Python 3.6, see
     http://bugs.python.org/issue15873 )
 
@@ -852,15 +852,15 @@ class Timestamp(object):
     string_timestamp = rfc3339_timestamp.replace(u'Z', '')
     if len(string_timestamp) >= 26:
       # Slicing to 26 because python doesn't understand nanosec timestamps
-      parsed_datetime = datetime.datetime.strptime(string_timestamp[:26],
-                                          u'%Y-%m-%dT%H:%M:%S.%f')
+      parsed_datetime = datetime.datetime.strptime(
+          string_timestamp[:26], u'%Y-%m-%dT%H:%M:%S.%f')
     else:
       try:
-        parsed_datetime = datetime.datetime.strptime(string_timestamp,
-                                            u'%Y-%m-%dT%H:%M:%S.%f')
+        parsed_datetime = datetime.datetime.strptime(
+            string_timestamp, u'%Y-%m-%dT%H:%M:%S.%f')
       except ValueError:
-        parsed_datetime = datetime.datetime.strptime(string_timestamp,
-                                            u'%Y-%m-%dT%H:%M:%S')
+        parsed_datetime = datetime.datetime.strptime(
+            string_timestamp, u'%Y-%m-%dT%H:%M:%S')
 
     return cls.FromPythonDatetime(parsed_datetime)
 
