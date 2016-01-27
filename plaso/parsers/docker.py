@@ -162,10 +162,8 @@ class DockerJSONParser(interface.FileObjectParser):
         timestamp = timelib.Timestamp.FromRFC3339(
             json_dict[u'State'][u'StartedAt'])
         event_attributes[u'action'] = u'Container Started'
-        parser_mediator.ProduceEvent(
-            DockerJSONContainerEvent(
-                timestamp,
-                eventdata.EventTimestamp.START_TIME, event_attributes))
+        parser_mediator.ProduceEvent(DockerJSONContainerEvent(
+            timestamp, eventdata.EventTimestamp.START_TIME, event_attributes))
       if u'FinishedAt' in json_dict['State']:
         if json_dict['State']['FinishedAt'] != u'0001-01-01T00:00:00Z':
           # If the timestamp is 0001-01-01T00:00:00Z, the container
@@ -173,11 +171,8 @@ class DockerJSONParser(interface.FileObjectParser):
           event_attributes['action'] = u'Container Finished'
           timestamp = timelib.Timestamp.FromRFC3339(
               json_dict['State']['FinishedAt'])
-          parser_mediator.ProduceEvent(
-              DockerJSONContainerEvent(
-                  timestamp,
-                  eventdata.EventTimestamp.END_TIME,
-                  event_attributes))
+          parser_mediator.ProduceEvent(DockerJSONContainerEvent(
+              timestamp, eventdata.EventTimestamp.END_TIME, event_attributes))
 
     created_time = json_dict.get(u'Created', None)
     if created_time:
