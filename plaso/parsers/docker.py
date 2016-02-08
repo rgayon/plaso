@@ -106,20 +106,6 @@ class DockerJSONParser(interface.FileObjectParser):
           u'not a valid Docker layer configuration file, missing '
           u'\'docker_version\' key.')
 
-    layer_id_from_json = json_dict.get(u'id', None)
-    if not layer_id_from_json:
-      raise errors.UnableToParseFile(
-          u'not a valid Docker layer configuration file, the \'id\' key is '
-          u'missing from the JSON dict (should be {0:s})'.format(
-              layer_id_from_path))
-
-    if layer_id_from_json != layer_id_from_path:
-      raise errors.UnableToParseFile(
-          u'not a valid Docker layer configuration file. The \'id\' key of the '
-          u'JSON dict ({0:s}) is different from the layer ID taken from the '
-          u'path to the file ({1:s}) JSON file.)'.format(
-              layer_id_from_json, layer_id_from_path))
-
     if u'created' in json_dict:
       timestamp = timelib.Timestamp.FromTimeString(json_dict[u'created'])
       layer_creation_command_array = [
