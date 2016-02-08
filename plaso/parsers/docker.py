@@ -98,20 +98,27 @@ class DockerJSONParser(interface.FileObjectParser):
       UnableToParseFile: when the file is not a valid layer config file.
     """
     json_dict = json.load(file_object)
-    layer_id = self._GetIDFromPath(parser_mediator)
-    event_attributes = {u'layer_id': layer_id}
+    layer_id_from_path = self._GetIDFromPath(parser_mediator)
+    event_attributes = {u'layer_id': layer_id_from_path}
 
-    if u'docker_version'  not in json_dict:
+    if u'docker_version' not in json_dict:
       raise errors.UnableToParseFile(
           u'not a valid Docker layer configuration file, missing '
           u'\'docker_version\' key.')
 
-    if u'id' in json_dict and (
-        json_dict[u'id'] != event_attributes[u'layer_id']):
+    layer_id_from_json = json_dict.get(u'id', None)
+    if not layer_id_from_json:
       raise errors.UnableToParseFile(
-          u'not a valid Docker layer configuration file, missing \'id\' key '
-          u'or \'id\' key != {2:s} (layer ID taken from the path to the '
-          u'JSON file.)')
+          u'not a valid Docker layer configuration file, the \'id\' key is '
+          u'missing from the JSON dict (should be {0:s})'.format(
+              layer_id_from_path))
+
+    if layer_id_from_json != layer_id_from_path:
+      raise errors.UnableToParseFile(
+          u'not a valid Docker layer configuration file. The \'id\' key of the '
+          u'JSON dict ({0:s}) is different from the layer ID taken from the '
+          u'path to the file ({1:s}) JSON file.)'.format(
+              layer_id_from_json, layer_id_from_path))
 
     if u'created' in json_dict:
       timestamp = timelib.Timestamp.FromTimeString(json_dict[u'created'])
@@ -141,19 +148,27 @@ class DockerJSONParser(interface.FileObjectParser):
       UnableToParseFile: when the file is not a valid container config file.
     """
     json_dict = json.load(file_object)
-    container_id = self._GetIDFromPath(parser_mediator)
-    event_attributes = {u'container_id': container_id}
+    container_id_from_path = self._GetIDFromPath(parser_mediator)
+    event_attributes = {u'container_id': container_id_from_path}
 
     if u'Driver' not in json_dict:
       raise errors.UnableToParseFile(
           u'not a valid Docker container configuration file, ' u'missing '
           u'\'Driver\' key.')
 
-    if u'ID' not in json_dict or (json_dict[u'ID'] != container_id):
-      raise errors.UnableToParseFile((
-          u'not a valid Docker container configuration file, missing \'ID\' '
-          u'key or \'ID\' key != {0:s} (container ID taken from the path to '
-          u'the JSON file.)').format(container_id))
+    container_id_from_json = json_dict.get(u'ID', None)
+    if not container_id_from_json:
+      raise errors.UnableToParseFile(
+          u'not a valid Docker layer configuration file, the \'ID\' key is '
+          u'missing from the JSON dict (should be {0:s})'.format(
+              container_id_from_path))
+
+    if container_id_from_json != container_id_from_path:
+      raise errors.UnableToParseFile(
+          u'not a valid Docker container configuration file. The \'id\' key of '
+          u'the JSON dict ({0:s}) is different from the layer ID taken from the'
+          u' path to the file ({1:s}) JSON file.)'.format(
+              container_id_from_json, container_id_from_path))
 
     if u'Config' in json_dict and u'Hostname' in json_dict[u'Config']:
       event_attributes[u'container_name'] = json_dict[u'Config'][u'Hostname']
