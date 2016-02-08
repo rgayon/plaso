@@ -165,7 +165,7 @@ class DockerJSONParser(interface.FileObjectParser):
 
     if container_id_from_json != container_id_from_path:
       raise errors.UnableToParseFile(
-          u'not a valid Docker container configuration file. The \'id\' key of '
+          u'not a valid Docker container configuration file. The \'ID\' key of '
           u'the JSON dict ({0:s}) is different from the layer ID taken from the'
           u' path to the file ({1:s}) JSON file.)'.format(
               container_id_from_json, container_id_from_path))
