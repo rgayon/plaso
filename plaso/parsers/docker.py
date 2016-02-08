@@ -56,10 +56,6 @@ class DockerJSONParser(interface.FileObjectParser):
     file_system = file_entry.GetFileSystem()
 
     json_file_path = parser_mediator.GetDisplayName()
-    if not json_file_path:
-      raise errors.UnableToParseFile(
-          u'Unable to get location attribute from '
-          u'file_entry.path_spec.')
     splited_path = file_system.SplitPath(json_file_path)
     try:
       if u'containers' in splited_path:
