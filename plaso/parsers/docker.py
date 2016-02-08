@@ -113,7 +113,7 @@ class DockerJSONParser(interface.FileObjectParser):
           u'JSON file.)')
 
     if u'created' in json_dict:
-      timestamp = timelib.Timestamp.FromRFC3339(json_dict[u'created'])
+      timestamp = timelib.Timestamp.FromTimeString(json_dict[u'created'])
       layer_creation_command_array = [
           x.strip() for x in json_dict[u'container_config'][u'Cmd']]
       layer_creation_command = u' '.join(layer_creation_command_array).replace(
@@ -161,7 +161,7 @@ class DockerJSONParser(interface.FileObjectParser):
 
     if u'State' in json_dict:
       if u'StartedAt' in json_dict[u'State']:
-        timestamp = timelib.Timestamp.FromRFC3339(
+        timestamp = timelib.Timestamp.FromTimeString(
             json_dict[u'State'][u'StartedAt'])
         event_attributes[u'action'] = u'Container Started'
         parser_mediator.ProduceEvent(DockerJSONContainerEvent(
@@ -171,14 +171,14 @@ class DockerJSONParser(interface.FileObjectParser):
           # If the timestamp is 0001-01-01T00:00:00Z, the container
           # is still running, so we don't generate a Finished event
           event_attributes['action'] = u'Container Finished'
-          timestamp = timelib.Timestamp.FromRFC3339(
+          timestamp = timelib.Timestamp.FromTimeString(
               json_dict['State']['FinishedAt'])
           parser_mediator.ProduceEvent(DockerJSONContainerEvent(
               timestamp, eventdata.EventTimestamp.END_TIME, event_attributes))
 
     created_time = json_dict.get(u'Created', None)
     if created_time:
-      timestamp = timelib.Timestamp.FromRFC3339(created_time)
+      timestamp = timelib.Timestamp.FromTimeString(created_time)
       event_attributes[u'action'] = u'Container Created'
       parser_mediator.ProduceEvent(
           DockerJSONContainerEvent(
@@ -207,7 +207,7 @@ class DockerJSONParser(interface.FileObjectParser):
       if u'log' in json_log_line and u'time' in json_log_line:
         event_attributes[u'log_line'] = json_log_line[u'log']
         event_attributes[u'log_source'] = json_log_line[u'stream']
-        timestamp = timelib.Timestamp.FromRFC3339(json_log_line[u'time'])
+        timestamp = timelib.Timestamp.FromTimeString(json_log_line[u'time'])
         parser_mediator.ProduceEvent(
             DockerJSONContainerLogEvent(timestamp, 0, event_attributes))
 
