@@ -73,6 +73,11 @@ class DockerJSONParser(interface.FileObjectParser):
         raise
 
   def _GetIDFromPath(self, parser_mediator):
+    """Extracts a container or a graph ID from a JSON file's path.
+
+    Args:
+      parser_mediator: a parser mediator object (instance of ParserMediator).
+    """
     file_entry = parser_mediator.GetFileEntry()
     path = file_entry.path_spec.location
     file_system = file_entry.GetFileSystem()
