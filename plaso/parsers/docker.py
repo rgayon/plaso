@@ -55,7 +55,7 @@ class DockerJSONParser(interface.FileObjectParser):
 
     file_system = file_entry.GetFileSystem()
 
-    json_file_path = parser_mediator.GetDisplayName(file_entry)
+    json_file_path = parser_mediator.GetDisplayName()
     if not json_file_path:
       raise errors.UnableToParseFile(
           u'Unable to get location attribute from '
