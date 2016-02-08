@@ -21,9 +21,7 @@ class DockerJSONUnitTest(test_lib.ParserTestCase):
     """Tests the _ParseContainerLogJSON function."""
     container_id = (u'e7d0b7ea5ccf08366e2b0c8afa231867'
                     u'4e8aefe802315378125d2bb83fe3110c')
-    test_file = self._GetTestFilePath([u'docker',
-                                       u'containers',
-                                       container_id,
+    test_file = self._GetTestFilePath([u'docker', u'containers', container_id,
                                        u'container-json.log'])
 
     event_queue_consumer = self._ParseFile(self._parser, test_file)
@@ -63,17 +61,14 @@ class DockerJSONUnitTest(test_lib.ParserTestCase):
       self.assertEqual(event_objects[index].container_id, container_id)
       self.assertEqual(event_objects[index].log_line, expected_log)
       self.assertEqual(event_objects[index].log_source, u'stdout')
-      self._TestGetMessageStrings(event_object,
-                                  expected_msg,
-                                  expected_msg_short)
+      self._TestGetMessageStrings(
+          event_object, expected_msg, expected_msg_short)
 
   def testParseContainerConfig(self):
     """Tests the _ParseContainerConfigJSON function."""
     container_id = (u'e7d0b7ea5ccf08366e2b0c8afa231867'
                     u'4e8aefe802315378125d2bb83fe3110c')
-    test_file = self._GetTestFilePath([u'docker',
-                                       u'containers',
-                                       container_id,
+    test_file = self._GetTestFilePath([u'docker', u'containers', container_id,
                                        u'config.json'])
 
     event_queue_consumer = self._ParseFile(self._parser, test_file)
@@ -101,10 +96,7 @@ class DockerJSONUnitTest(test_lib.ParserTestCase):
     """Tests the _ParseLayerConfigJSON function."""
     layer_id = (u'3c9a9d7cc6a235eb2de58ca9ef3551c6'
                 u'7ae42a991933ba4958d207b29142902b')
-    test_file = self._GetTestFilePath(['docker',
-                                       u'graph',
-                                       layer_id,
-                                       u'json'])
+    test_file = self._GetTestFilePath(['docker', u'graph', layer_id, u'json'])
 
     event_queue_consumer = self._ParseFile(self._parser, test_file)
     event_objects = self._GetEventObjectsFromQueue(event_queue_consumer)
