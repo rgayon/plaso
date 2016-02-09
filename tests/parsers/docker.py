@@ -21,8 +21,8 @@ class DockerJSONUnitTest(test_lib.ParserTestCase):
     """Tests the _ParseContainerLogJSON function."""
     container_id = (u'e7d0b7ea5ccf08366e2b0c8afa231867'
                     u'4e8aefe802315378125d2bb83fe3110c')
-    test_file = self._GetTestFilePath([u'docker', u'containers', container_id,
-                                       u'container-json.log'])
+    test_file = self._GetTestFilePath(
+        [u'docker', u'containers', container_id, u'container-json.log'])
 
     event_queue_consumer = self._ParseFile(self._parser, test_file)
     event_objects = self._GetEventObjectsFromQueue(event_queue_consumer)
@@ -68,8 +68,8 @@ class DockerJSONUnitTest(test_lib.ParserTestCase):
     """Tests the _ParseContainerConfigJSON function."""
     container_id = (u'e7d0b7ea5ccf08366e2b0c8afa231867'
                     u'4e8aefe802315378125d2bb83fe3110c')
-    test_file = self._GetTestFilePath([u'docker', u'containers', container_id,
-                                       u'config.json'])
+    test_file = self._GetTestFilePath(
+        [u'docker', u'containers', container_id, u'config.json'])
 
     event_queue_consumer = self._ParseFile(self._parser, test_file)
     event_objects = self._GetEventObjectsFromQueue(event_queue_consumer)

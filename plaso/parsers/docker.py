@@ -64,7 +64,7 @@ class DockerJSONParser(interface.FileObjectParser):
         if json_file_path.endswith(u'-json.log'):
           self._ParseContainerLogJSON(parser_mediator, file_object)
       elif u'graph' in split_path:
-        if u'json' in split_path > 0:
+        if u'json' in split_path:
           self._ParseLayerConfigJSON(parser_mediator, file_object)
     except ValueError as exception:
       if exception == u'No JSON object could be decoded':
