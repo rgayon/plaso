@@ -64,6 +64,7 @@ class WinJobParser(interface.FileObjectParser):
       0x0400: u'Windows NT 4.0',
       0x0500: u'Windows 2000',
       0x0501: u'Windows XP',
+      0x0502: u'Windows 2003',
       0x0600: u'Windows Vista',
       0x0601: u'Windows 7',
       0x0602: u'Windows 8',
