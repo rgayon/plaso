@@ -29,33 +29,13 @@ echo 'Installing Microsoft Visual C++ Compiler for Python 2.7... done!' | Tee-Ob
 ## Download & install Chocolatey
 echo 'Installing Chocolatey' | Tee-Object -Append -FilePath $install_log_path
 iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-
-## Install plaso dependencies
-Choco install patch -y | Tee-Object -Append -FilePath $install_log_path # Used when building plaso dependencies
-Choco install jre8 -y | Tee-Object -Append -FilePath $install_log_path # Needed for jenkins client
-Choco install git -y --params '"/GitAndUnixToolsOnPath"' | Out-Null #Tee-Object -Append -FilePath $install_log_path
-Choco install python2 -y | Tee-Object -Append -FilePath $install_log_path
-# Pip package is broken as per 2017-07-14
-Choco install pip -y --allow-empty-checksums | Tee-Object -Append -FilePath $install_log_path
-Choco install vcredist2010 -y | Tee-Object -Append -FilePath $install_log_path
-
-c:\python27\scripts\pip.exe install wmi | Tee-Object -Append -FilePath $install_log_path
-c:\python27\scripts\pip.exe install pypiwin32 | Tee-Object -Append -FilePath $install_log_path
-c:\python27\scripts\pip.exe install requests | Tee-Object -Append -FilePath $install_log_path
-
-$Assembly = Add-Type -AssemblyName System.Web
-$new_user_password = [System.Web.Security.Membership]::GeneratePassword(12,2)
-$new_user_securestring = ConvertTo-SecureString "$($new_user_password)" -asplaintext -force
-New-LocalUser -Name $($username) -Description "Account to run plaso tests" -Password $new_user_securestring
-$newuserobj = Get-WmiObject win32_useraccount -Filter "name ='$($username)'"
-$newusersid = $newuserobj.SID
-echo $new_user_password | runas /profile /user:$($username) "mkdir $ssh_user_directory" | Tee-Object -Append -FilePath $install_log_path
-
+#
 ## Set up SSHd
 $user_dirs = Get-ChildItem "C:\Users\$($username)*"
 $user_dir = $user_dirs[0].FullName
 $ssh_user_directory = "$($user_dir)\.ssh"
 $authorized_keys_path = "$($ssh_user_directory)\authorized_keys"
+mkdir $ssh_user_directory | Tee-Object -Append -FilePath $install_log_path
 
 echo 'Installing SSHd' | Tee-Object -Append -FilePath $install_log_path
 Choco install openssh -y --force --params '"/SSHServerFeature"' | Tee-Object -Append -FilePath $install_log_path
@@ -76,10 +56,18 @@ echo "Remove extra permissions on $($authorized_keys_path)" | Tee-Object -Append
 echo "New ACLs for $($authorized_keys_path):" | Tee-Object -Append -FilePath $install_log_path
 Get-Acl $authorized_keys_path | Tee-Object -Append -FilePath $install_log_path
 
-echo "Remove extra permissions on $($authorized_keys_path)" | Tee-Object -Append -FilePath $install_log_path
-.\icacls.exe $($authorized_keys_path) /inheritance:d
-.\icacls.exe $($authorized_keys_path) /remove Everyone
-.\icacls.exe $($authorized_keys_path) /remove BUILTIN\Users
+## Install plaso dependencies
+Choco install patch -y | Tee-Object -Append -FilePath $install_log_path # Used when building plaso dependencies
+Choco install jre8 -y | Tee-Object -Append -FilePath $install_log_path # Needed for jenkins client
+Choco install git -y --params '"/GitAndUnixToolsOnPath"' | Out-Null #Tee-Object -Append -FilePath $install_log_path
+Choco install python2 -y | Tee-Object -Append -FilePath $install_log_path
+# Pip package is broken as per 2017-07-14
+Choco install pip -y --allow-empty-checksums | Tee-Object -Append -FilePath $install_log_path
+Choco install vcredist2010 -y | Tee-Object -Append -FilePath $install_log_path
+
+c:\python27\scripts\pip.exe install wmi | Tee-Object -Append -FilePath $install_log_path
+c:\python27\scripts\pip.exe install pypiwin32 | Tee-Object -Append -FilePath $install_log_path
+c:\python27\scripts\pip.exe install requests | Tee-Object -Append -FilePath $install_log_path
 
 echo 'Downloading Jenkins client' | Tee-Object -Append -FilePath $install_log_path
 mkdir $jenkins_home_directory
@@ -88,4 +76,5 @@ mkdir $jenkins_home_directory
 # Disable stupid UAC
 New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"  -Name EnableInstallerDetection -Value 0 -Force
 # This needs a reboot to be applied
+
 Restart-Computer
