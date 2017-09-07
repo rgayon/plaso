@@ -143,7 +143,7 @@ class SlaveManager(object):
         'disks': disks,
         'networkInterfaces': [{
             'accessConfigs': [{
-                'type': 'ONE_TO_ONE_NAT', 'name': 'External NAT' }],
+                'type': 'ONE_TO_ONE_NAT', 'name': 'External NAT'}],
             'network': network_url, }],
         'serviceAccounts': [{
             'email': 'default',
