@@ -76,4 +76,5 @@ mkdir $jenkins_home_directory
 # Disable stupid UAC
 New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"  -Name EnableInstallerDetection -Value 0 -Force
 # This needs a reboot to be applied
+
 Restart-Computer
