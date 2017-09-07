@@ -1,3 +1,5 @@
+"""Script to create Jenkins Slaves."""
+
 from __future__ import unicode_literals
 
 import argparse
@@ -227,9 +229,8 @@ if __name__ == '__main__':
 
   if flags.ssh_pub_key:
     ssh_key_item = {
-      'key': 'ssh-keys',
-      'value': '\n'.join(flags.linux_startup_script_url)
-
+        'key': 'ssh-keys',
+        'value': '\n'.join(flags.linux_startup_script_url)
     }
     instance_metadata['items'].append(ssh_key_item)
 
