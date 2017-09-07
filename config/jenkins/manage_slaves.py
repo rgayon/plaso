@@ -13,7 +13,6 @@ except ImportError:
   from apiclient import discovery
 
 import googleapiclient.errors
-from oauth2client import client as oauth2client
 
 
 class SlaveManager(object):
@@ -236,13 +235,13 @@ if __name__ == '__main__':
 
   try:
     manager.CreateInstance(
-      flags.instance_name, persistent_disks=flags.attach_persistent_disk,
-      source_image=flags.source_image, machinetype=flags.machine_type,
-      metadata=instance_metadata, network=flags.network)
+        flags.instance_name, persistent_disks=flags.attach_persistent_disk,
+        source_image=flags.source_image, machinetype=flags.machine_type,
+        metadata=instance_metadata, network=flags.network)
   except googleapiclient.errors.HttpError as error:
     if error.resp['status'] == '409':
       error_message = (
           'There is already an instance names {0:s} in project {1:s}'.format(
               flags.instance_name, flags.project)
       )
-      print(error_message)
+      print error_message
