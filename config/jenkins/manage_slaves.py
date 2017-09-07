@@ -147,11 +147,14 @@ class SlaveManager(object):
             'scopes': scopes,
         }],
     }
+    if metadata:
+      instance_dict['metadata'] = metadata
+
     self._Debug(instance_dict)
 
     operation = self._client.instances().insert(
         project=self._project, body=instance_dict, zone=self._zone).execute()
-    response = self._WaitForOperation(operation)
+    self._WaitForOperation(operation)
 
   def UpdateInstanceMetadata(self, instance_name, new_metadata):
     """Update the instance metadata."""
