@@ -116,7 +116,7 @@ class SlaveManager(object):
     project_url = 'compute/v1/projects/{0:s}'.format(self._project)
     zone_url = '%s/zones/%s' % (project_url, self._zone)
     machine_type_url = '{0:s}/zones/{1:s}/machineTypes/{2:s}'.format(
-          project_url, self._zone, machinetype)
+        project_url, self._zone, machinetype)
     network_url = '{0:s}/global/networks/{1:s}'.format(project_url, network)
 
     disks = [
@@ -135,22 +135,22 @@ class SlaveManager(object):
 
     persistent_disks = self._MakeAttachPD(persistent_disks)
     for persistent_disk in persistent_disks:
-        disks.append(persistent_disk)
+      disks.append(persistent_disk)
 
     instance_dict = {
         'name': instance_name,
         'machineType': machine_type_url,
         'disks': disks,
         'networkInterfaces': [{
-          'accessConfigs': [{
-            'type': 'ONE_TO_ONE_NAT',
-            'name': 'External NAT'
-           }],
-          'network': network_url,
+            'accessConfigs': [{
+                'type': 'ONE_TO_ONE_NAT',
+                'name': 'External NAT'
+             }],
+            'network': network_url,
         }],
         'serviceAccounts': [{
-             'email': 'default',
-             'scopes': scopes,
+            'email': 'default',
+            'scopes': scopes,
         }],
     }
     self._Debug(instance_dict)
