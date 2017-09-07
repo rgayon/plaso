@@ -7,12 +7,8 @@ import datetime
 import sys
 import time
 
-try:
-  from googleapiclient import discovery
-except ImportError:
-  from apiclient import discovery
-
-import googleapiclient.errors
+from googleapiclient import discovery
+from googleapiclient import errors as apierrors
 
 
 class SlaveManager(object):
@@ -53,14 +49,6 @@ class SlaveManager(object):
           raise Exception(result['error'])
         return result
       time.sleep(1)
-
-  def _GetSerialPortOutput(self, instance_name, port):
-    """Get the output from a serial port of the instance."""
-    operation = self._client.instances().getSerialPortOutput(
-        instance=instance_name, project=self._project, zone=self._zone,
-        port=port)
-    output = operation.execute()
-    return output['contents']
 
   def _MakeAttachPD(self, persistent_disks):
     """Builds a list of dicts describing all disks to attach.
@@ -240,10 +228,12 @@ if __name__ == '__main__':
         flags.instance_name, persistent_disks=flags.attach_persistent_disk,
         source_image=flags.source_image, machinetype=flags.machine_type,
         metadata=instance_metadata, network=flags.network)
-  except googleapiclient.errors.HttpError as error:
+  except apierrors.HttpError as error:
     if error.resp['status'] == '409':
       error_message = (
           'There is already an instance names {0:s} in project {1:s}'.format(
               flags.instance_name, flags.project)
       )
       print error_message
+    else:
+      raise error
