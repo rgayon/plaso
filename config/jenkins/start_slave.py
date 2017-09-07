@@ -12,7 +12,6 @@ from googleapiclient import errors as apierrors
 
 #pylint: disable=no-member
 
-
 class SlaveManager(object):
   """Class for managing Jenkins Slaves."""
 
