@@ -115,7 +115,6 @@ class SlaveManager(object):
     self._Log('Creating new instance {0:s}'.format(instance_name))
 
     project_url = 'compute/v1/projects/{0:s}'.format(self._project)
-    zone_url = '%s/zones/%s' % (project_url, self._zone)
     machine_type_url = '{0:s}/zones/{1:s}/machineTypes/{2:s}'.format(
         project_url, self._zone, machinetype)
     network_url = '{0:s}/global/networks/{1:s}'.format(project_url, network)
