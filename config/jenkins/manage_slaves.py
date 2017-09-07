@@ -141,7 +141,10 @@ class SlaveManager(object):
         'name': instance_name,
         'machineType': machine_type_url,
         'disks': disks,
-        'networkInterfaces': [{ 'accessConfigs': [{ 'type': 'ONE_TO_ONE_NAT', 'name': 'External NAT' }], 'network': network_url, }],
+        'networkInterfaces': [{
+            'accessConfigs': [{
+                'type': 'ONE_TO_ONE_NAT', 'name': 'External NAT' }],
+            'network': network_url, }],
         'serviceAccounts': [{
             'email': 'default',
             'scopes': scopes,
