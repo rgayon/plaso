@@ -3,7 +3,6 @@
 from __future__ import unicode_literals
 
 import argparse
-import datetime
 import json
 import sys
 import time
@@ -71,13 +70,13 @@ class SlaveManager(object):
     disk_list = list()
     mode = 'READ_ONLY'
     if persistent_disks:
-      for pd_name, device_name in persistent_disks.items():
+      for _pd_name, _device_name in persistent_disks.items():
         source_url = (
             'https://www.googleapis.com/compute/v1/projects/{0:s}/zones/{1:s}/'
-            'disks/{2:s}').format(self._project, self._zone, pd_name)
+            'disks/{2:s}').format(self._project, self._zone, _pd_name)
         disk_list.append(
             {
-                'deviceName': device_name,
+                'deviceName': _device_name,
                 'source': source_url,
                 'mode': mode
             }
@@ -102,7 +101,7 @@ class SlaveManager(object):
         network (Optional[str]): type of network to use (default: 'default')
         persistent_disks (Optional[dict(str:str)]): list of disks to attach to
           the instance, in the form {'persistent_disk_name': 'device_name'}.
-        scopes (Optional[list[str]]): the list of scopes to set for the instance.
+        scopes (Optional[list[str]]): the list of scopes to set for the instance
     """
 
     scopes = scopes or self.DEFAULT_SCOPES
@@ -176,7 +175,8 @@ if __name__ == '__main__':
       '--source_image', action='store', required=True,
       help='Path to the image, ie: /projects/<project_name>/zones/images/...')
   parser.add_argument(
-      '--linux_startup_script_url', action='store', required=False, metavar=('SCRIPT_URL'),
+      '--linux_startup_script_url', action='store', required=False,
+      metavar=('SCRIPT_URL'),
       help='GCS url to a startup script for a Linux instance')
   parser.add_argument(
       '--machine_type', action='store', required=False, default='n1-standard-8',
@@ -192,7 +192,8 @@ if __name__ == '__main__':
       help=('Specify SSH public keys to use. '
             'Example: \'root:ssh-rsa AAAA... root\''))
   parser.add_argument(
-      '--windows_startup_script_url', action='store', required=False, metavar=('SCRIPT_URL'),
+      '--windows_startup_script_url', action='store', required=False,
+      metavar=('SCRIPT_URL'),
       help='GCS url to a startup script for a Windows instance')
   parser.add_argument(
       '--zone', action='store', required=True, help='The zone for the instance')
@@ -226,17 +227,18 @@ if __name__ == '__main__':
     }
     instance_metadata['items'].append(ssh_key_item)
 
-  persistent_disks = {}
+  persistent_disks_dict = {}
+
   pd_name = flags.attach_persistent_disk
   if pd_name:
-    persistent_disks[pd_name] = pd_name
+    persistent_disks_dict[pd_name] = pd_name
   if flags.attach_persistent_disk_with_name:
     pd_name, device_name = flags.attach_persistent_disk_with_name.split(':')
-    persistent_disks[device_name] = pd_name
+    persistent_disks_dict[device_name] = pd_name
 
   try:
     manager.CreateInstance(
-        flags.instance_name, persistent_disks=persistent_disks,
+        flags.instance_name, persistent_disks=persistent_disks_dict,
         source_image=flags.source_image, machinetype=flags.machine_type,
         metadata=instance_metadata, network=flags.network)
   except apierrors.HttpError as error:
