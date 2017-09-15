@@ -68,6 +68,7 @@ Choco install vcredist2010 -y | Tee-Object -Append -FilePath $install_log_path
 c:\python27\scripts\pip.exe install wmi | Tee-Object -Append -FilePath $install_log_path
 c:\python27\scripts\pip.exe install pypiwin32 | Tee-Object -Append -FilePath $install_log_path
 c:\python27\scripts\pip.exe install requests | Tee-Object -Append -FilePath $install_log_path
+c:\python27\scripts\pip.exe install pyinstaller | Tee-Object -Append -FilePath $install_log_path
 
 echo 'Downloading Jenkins client' | Tee-Object -Append -FilePath $install_log_path
 mkdir $jenkins_home_directory
