@@ -28,6 +28,18 @@ def Main():
   if not tool.ParseArguments():
     return False
 
+  if not tool._storage_file_path:
+    raise Exception("fail! ")
+
+  have_list_option = False
+
+  if tool.list_timezones:
+    tool.ListTimeZones()
+    have_list_option = True
+
+  if have_list_option:
+    return True
+
   try:
     tool.ExtractEventsFromSources()
     tool.AnalyzeEvents()
