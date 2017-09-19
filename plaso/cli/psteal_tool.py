@@ -156,6 +156,9 @@ class PstealTool(
 
     The result use a timestamp and the basename of the source path.
 
+    Returns:
+      str: a for the storage file in the form <time>-<source>.plaso
+
     Raises:
       BadConfigOption: raised if the source path is not set.
     """
@@ -349,7 +352,6 @@ class PstealTool(
           file system.
       UserAbort: if the user initiated an abort.
     """
-    self._CheckStorageFile(self._storage_file_path)
 
     scan_context = self.ScanSource()
     source_type = scan_context.source_type
@@ -529,6 +531,7 @@ class PstealTool(
     Raises:
       BadConfigOption: if the options are invalid.
     """
+
     # The extraction options are dependent on the data location.
     helpers_manager.ArgumentHelperManager.ParseOptions(
         options, self, names=['data_location'])
