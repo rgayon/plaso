@@ -497,6 +497,7 @@ class PstealTool(
     helpers_manager.ArgumentHelperManager.AddCommandLineArguments(
         extraction_group, names=argument_helper_names)
 
+    self.AddStorageMediaImageOptions(extraction_group)
     self.AddCredentialOptions(extraction_group)
 
     info_group = argument_parser.add_argument_group('Informational Arguments')
