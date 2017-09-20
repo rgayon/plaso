@@ -29,6 +29,13 @@ class PstealToolTest(test_lib.CLIToolTestCase):
 
   _STORAGE_FILENAME_TEMPLATE = r'\d{{8}}T\d{{6}}-{filename}.plaso'
 
+  def setUp(self):
+    self.curdir = os.path.realpath(os.path.curdir)
+
+  def tearDown(self):
+    os.chdir(self.curdir)
+
+
   def testGenerateStorageFileName(self):
     """Tests the _GenerateStorageFileName function."""
     test_tool = psteal_tool.PstealTool()
@@ -69,14 +76,19 @@ class PstealToolTest(test_lib.CLIToolTestCase):
     test_tool = psteal_tool.PstealTool(output_writer=output_writer)
 
     options = test_lib.TestOptions()
-    options.artifact_definitions_path = self._GetTestFilePath([u'artifacts'])
-
+    options.source = u'source'
     # Test when the output file is missing.
     expected_error = (u'Output format: dynamic requires an output file')
     with self.assertRaisesRegexp(errors.BadConfigOption, expected_error):
       test_tool.ParseOptions(options)
 
-    options.write = u'dynamic.out'
+    options = test_lib.TestOptions()
+    options.write = u'output.csv'
+    # Test when the output file is missing.
+    expected_error = (u'Output format: dynamic requires an output file')
+    with self.assertRaisesRegexp(errors.BadConfigOption, expected_error):
+      test_tool.ParseOptions(options)
+
 
     # Test when the source is missing.
     expected_error = u'Missing source path.'
@@ -110,7 +122,7 @@ class PstealToolTest(test_lib.CLIToolTestCase):
     result = test_tool.ParseArguments()
     self.assertFalse(result)
     output = output_writer.ReadOutput()
-    expected_error = u'ERROR: Output format: dynamic requires an output file'
+    expected_error = u'ERROR: Missing source path'
     self.assertIn(expected_error, output)
 
   def testExtractEventsFromSourceDirectory(self):
@@ -125,6 +137,7 @@ class PstealToolTest(test_lib.CLIToolTestCase):
     options.source = self._GetTestFilePath([u'testdir'])
 
     with shared_test_lib.TempDirectory() as temp_directory:
+      os.chdir(temp_directory)
       options.write = os.path.join(temp_directory, u'unused_output.txt')
       options.storage_file = os.path.join(temp_directory, u'storage.plaso')
 
@@ -161,6 +174,7 @@ class PstealToolTest(test_lib.CLIToolTestCase):
     options.status_view_mode = u'none'
 
     with shared_test_lib.TempDirectory() as temp_directory:
+      os.chdir(temp_directory)
       options.write = os.path.join(temp_directory, u'unused_output.txt')
       options.storage_file = os.path.join(temp_directory, u'storage.plaso')
 
@@ -193,6 +207,7 @@ class PstealToolTest(test_lib.CLIToolTestCase):
     options.source = self._GetTestFilePath([u'ímynd.dd'])
 
     with shared_test_lib.TempDirectory() as temp_directory:
+      os.chdir(temp_directory)
       options.write = os.path.join(temp_directory, u'unused_output.txt')
       options.storage_file = os.path.join(temp_directory, u'storage.plaso')
 
@@ -228,6 +243,7 @@ class PstealToolTest(test_lib.CLIToolTestCase):
     options.source = self._GetTestFilePath([u'multi_partition_image.vmdk'])
 
     with shared_test_lib.TempDirectory() as temp_directory:
+      os.chdir(temp_directory)
       options.write = os.path.join(temp_directory, u'unused_output.txt')
       options.storage_file = os.path.join(temp_directory, u'storage.plaso')
 
@@ -262,6 +278,7 @@ class PstealToolTest(test_lib.CLIToolTestCase):
     options.vss_stores = u'all'
 
     with shared_test_lib.TempDirectory() as temp_directory:
+      os.chdir(temp_directory)
       options.write = os.path.join(temp_directory, u'unused_output.txt')
       options.storage_file = os.path.join(temp_directory, u'storage.plaso')
 
@@ -298,6 +315,7 @@ class PstealToolTest(test_lib.CLIToolTestCase):
     options.source = self._GetTestFilePath([u'System.evtx'])
 
     with shared_test_lib.TempDirectory() as temp_directory:
+      os.chdir(temp_directory)
       options.write = os.path.join(temp_directory, u'unused_output.txt')
       options.storage_file = os.path.join(temp_directory, u'storage.plaso')
 
@@ -329,6 +347,7 @@ class PstealToolTest(test_lib.CLIToolTestCase):
     options.source = u'unused_source'
 
     with shared_test_lib.TempDirectory() as temp_directory:
+      os.chdir(temp_directory)
       options.write = os.path.join(temp_directory, u'output.txt')
 
       test_tool.ParseOptions(options)
