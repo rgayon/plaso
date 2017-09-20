@@ -35,7 +35,6 @@ class PstealToolTest(test_lib.CLIToolTestCase):
   def tearDown(self):
     os.chdir(self.curdir)
 
-
   def testGenerateStorageFileName(self):
     """Tests the _GenerateStorageFileName function."""
     test_tool = psteal_tool.PstealTool()
@@ -84,8 +83,8 @@ class PstealToolTest(test_lib.CLIToolTestCase):
 
     options = test_lib.TestOptions()
     options.write = u'output.csv'
-    # Test when the output file is missing.
-    expected_error = (u'Output format: dynamic requires an output file')
+    # Test when the source is missing.
+    expected_error = (u'Missing source path.')
     with self.assertRaisesRegexp(errors.BadConfigOption, expected_error):
       test_tool.ParseOptions(options)
 

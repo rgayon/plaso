@@ -481,7 +481,10 @@ class PstealTool(
 
     extraction_group.add_argument(
         u'--storage_file', metavar=u'STORAGE_FILE', nargs=u'?', type=str,
-        default=None, help=u'The path of the storage file.')
+        default=None, help=(
+            u'The path of the storage file. If not specified, will generate one'
+            u' in the form <timestamp>-<source>.plaso')
+    )
 
     self.AddStorageMediaImageOptions(extraction_group)
     self.AddCredentialOptions(extraction_group)
