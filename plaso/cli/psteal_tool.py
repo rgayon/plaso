@@ -567,8 +567,8 @@ class PstealTool(
 
     if not self._output_filename:
       raise errors.BadConfigOption((
-          u'Output format: {0:s} requires an output file').format(
-              output_format))
+          u'Output format: {0:s} requires an output file (-w OUTPUT_FILE)'
+      ).format(self._output_format))
     argument_helper_names = ['extraction', 'status_view']
     helpers_manager.ArgumentHelperManager.ParseOptions(
         options, self, names=argument_helper_names)
