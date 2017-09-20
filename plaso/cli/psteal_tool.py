@@ -479,6 +479,10 @@ class PstealTool(
     helpers_manager.ArgumentHelperManager.AddCommandLineArguments(
         extraction_group, names=argument_helper_names)
 
+    extraction_group.add_argument(
+        u'--storage_file', metavar=u'STORAGE_FILE', nargs=u'?', type=str,
+        default=None, help=u'The path of the storage file.')
+
     self.AddStorageMediaImageOptions(extraction_group)
     self.AddCredentialOptions(extraction_group)
 
@@ -559,6 +563,7 @@ class PstealTool(
 
     self._ParseStorageMediaOptions(options)
 
+    self._storage_file_path = getattr(options, u'storage_file', None)
     if not self._storage_file_path:
       self._storage_file_path = self._GenerateStorageFileName()
 
