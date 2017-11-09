@@ -21,8 +21,8 @@ class SlaveManager(object):
     """Create a new SlaveManager.
 
     Args:
-      project(str): the GCE project name.
-      zone(str): the destination GCP zone.
+      project (str): the GCE project name.
+      zone (str): the destination GCP zone.
     """
 
     self._project = project
@@ -42,7 +42,7 @@ class SlaveManager(object):
     """Waits for an API operation to complete.
 
     Args:
-      operation(dict): the API request.
+      operation (dict): the API request.
 
     Returns:
       dict: the API call response.
@@ -65,18 +65,18 @@ class SlaveManager(object):
         {'persistent_disk_name': 'device_name'}.
 
     Returns:
-      list(dict): the list of disks to attach.
+      list (dict): the list of disks to attach.
     """
     disk_list = list()
     mode = 'READ_ONLY'
     if persistent_disks:
-      for _pd_name, _device_name in persistent_disks.items():
+      for disk_name, device in persistent_disks.items():
         source_url = (
             'https://www.googleapis.com/compute/v1/projects/{0:s}/zones/{1:s}/'
-            'disks/{2:s}').format(self._project, self._zone, _pd_name)
+            'disks/{2:s}').format(self._project, self._zone, disk_name)
         disk_list.append(
             {
-                'deviceName': _device_name,
+                'deviceName': device,
                 'source': source_url,
                 'mode': mode
             }
